@@ -2,11 +2,8 @@
 
 ## Phase 1
 
-- [ ] Learn classes
-- [ ] Learn objects
-- [ ] Learn constructors
-- [ ] Create PasswordEntry
-- [ ] Create Vault
+- [x] Create PasswordEntry
+- [x] Create Vault
 - [ ] Save to file
 - [ ] Load from file
 

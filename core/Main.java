@@ -1,12 +1,16 @@
 package core;
 
 import java.util.Scanner;
+import core.storage.VaultStorage;
 
 public class Main {
+
+    private static final String VAULT_FILE = "data/vault.txt";
+
     public static void main(String[] args) {
 
         Scanner scanner = new Scanner(System.in);
-        Vault vault = new Vault();
+        Vault vault = VaultStorage.load(VAULT_FILE);
 
         while (true) {
 
@@ -15,41 +19,55 @@ public class Main {
             System.out.println("====================");
             System.out.println("1. Add Password");
             System.out.println("2. View Passwords");
-            System.out.println("3. Exit");
+            System.out.println("3. Save Vault");
+            System.out.println("4. Exit");
             System.out.print("Choice: ");
 
             int choice = scanner.nextInt();
             scanner.nextLine();
 
-            if (choice == 1) {
+            switch (choice) {
 
-                System.out.print("Website: ");
-                String website = scanner.nextLine();
+                case 1:
+                    addPassword(scanner, vault);
+                    break;
 
-                System.out.print("Username: ");
-                String username = scanner.nextLine();
+                case 2:
+                    vault.displayEntries();
+                    break;
 
-                System.out.print("Password: ");
-                String password = scanner.nextLine();
+                case 3:
+                    VaultStorage.save(vault, VAULT_FILE);
+                    break;
 
-                System.out.print("Notes: ");
-                String notes = scanner.nextLine();
+                case 4:
+                    System.out.println("Goodbye!");
+                    scanner.close();
+                    return;
 
-                PasswordEntry github = new PasswordEntry(website, username, password, notes);
-                vault.addEntry(github);
-
-                System.out.println("Password added successfully!");
-
-            } else if (choice == 2) {
-                vault.displayEntries();
-            } else if (choice == 3) {
-                System.out.println("Goodbye!");
-                break;
-            } else {
-                System.out.println("Invalid choise");
+                default:
+                    System.out.println("Invalid choice");
             }
         }
 
-        scanner.close();
+    }
+
+    public static void addPassword(Scanner scanner, Vault vault) {
+        System.out.print("Website: ");
+        String website = scanner.nextLine();
+
+        System.out.print("Username: ");
+        String username = scanner.nextLine();
+
+        System.out.print("Password: ");
+        String password = scanner.nextLine();
+
+        System.out.print("Notes: ");
+        String notes = scanner.nextLine();
+
+        PasswordEntry entry = new PasswordEntry(website, username, password, notes);
+        vault.addEntry(entry);
+
+        System.out.println("Password added successfully!");
     }
 }

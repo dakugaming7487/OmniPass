@@ -21,4 +21,20 @@ public class PasswordEntry {
         System.out.println("Notes: " + notes);
     }
 
+    public String getWebsite() {
+        return website;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
 }

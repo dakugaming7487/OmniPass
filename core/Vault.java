@@ -6,6 +6,10 @@ public class Vault {
 
     private ArrayList<PasswordEntry> entries;
 
+    public ArrayList<PasswordEntry> getEntries() {
+        return entries;
+    }
+
     public Vault() {
         entries = new ArrayList<>();
     }
