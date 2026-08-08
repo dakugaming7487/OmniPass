@@ -15,7 +15,7 @@ public class Main {
         while (true) {
 
             System.out.println("\n====================");
-            System.out.println("      DakuPass");
+            System.out.println("      PasswdManager");
             System.out.println("====================");
             System.out.println("1. Add Password");
             System.out.println("2. View Passwords");
