@@ -12,7 +12,7 @@ A cross-platform, offline-firts password manager built in java.
 - Load vault from disk
 - offline first
 
-## Planned Features
+## Planned Features -
 
 - Search passwords
 - Edit passwords
