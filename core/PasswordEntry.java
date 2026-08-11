@@ -21,6 +21,12 @@ public class PasswordEntry {
         System.out.println("Notes: " + notes);
     }
 
+    public void displaySummary() {
+        System.out.println(getWebsite());
+        System.out.println(getUsername());
+    }
+
+    // Getters
     public String getWebsite() {
         return website;
     }
@@ -37,4 +43,32 @@ public class PasswordEntry {
         return notes;
     }
 
+    // setter
+    public void setUsername(String username) {
+        if (username.isEmpty()) {
+        } else {
+            this.username = username;
+        }
+    }
+
+    public void setPassword(String password) {
+        if (password.isEmpty()) {
+        } else {
+            this.password = password;
+        }
+    }
+
+    public void setNotes(String notes) {
+        if (notes.isEmpty()) {
+        } else {
+            this.notes = notes;
+        }
+    }
+
+    public void setWebsite(String website) {
+        if (website.isEmpty()) {
+        } else {
+            this.website = website;
+        }
+    }
 }

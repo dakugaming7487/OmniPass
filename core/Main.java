@@ -1,6 +1,7 @@
 package core;
 
 import java.util.Scanner;
+import java.util.ArrayList;
 import core.storage.VaultStorage;
 
 public class Main {
@@ -19,8 +20,10 @@ public class Main {
             System.out.println("====================");
             System.out.println("1. Add Password");
             System.out.println("2. View Passwords");
-            System.out.println("3. Save Vault");
-            System.out.println("4. Exit");
+            System.out.println("3. Search Password");
+            System.out.println("4. Edit Password");
+            System.out.println("5. Save Vault");
+            System.out.println("6. Exit");
             System.out.print("Choice: ");
 
             int choice = scanner.nextInt();
@@ -28,25 +31,89 @@ public class Main {
 
             switch (choice) {
 
-                case 1:
+                case 1: {
                     addPassword(scanner, vault);
                     break;
+                }
 
-                case 2:
+                case 2: {
                     vault.displayEntries();
                     break;
+                }
 
-                case 3:
+                case 3: {
+                    System.out.print("Website: ");
+                    String website = scanner.nextLine();
+
+                    ArrayList<PasswordEntry> results = vault.searchByWebsite(website);
+
+                    if (results.isEmpty()) {
+                        System.out.println("No matching Websites found.");
+                    } else {
+                        for (PasswordEntry entry : results) {
+                            entry.display();
+                            System.out.println("--------------------");
+                        }
+                    }
+
+                    break;
+                }
+
+                case 4: {
+                    System.out.print("Website: ");
+                    String website = scanner.nextLine();
+
+                    ArrayList<PasswordEntry> results = vault.searchByWebsite(website);
+
+                    if (results.isEmpty()) {
+                        System.out.println("No matching Websites found");
+                    } else {
+                        int i = 1;
+                        for (PasswordEntry entry : results) {
+                            System.out.println(i + ".");
+                            entry.displaySummary();
+                            System.out.println("--------------------");
+                            i++;
+                        }
+                        System.out.print("Choose Entry: ");
+                        int selected = scanner.nextInt();
+                        scanner.nextLine();
+                        PasswordEntry entry = results.get(selected - 1);
+
+                        System.out.print("New Website: ");
+                        String newWebsite = scanner.nextLine();
+                        entry.setWebsite(newWebsite);
+
+                        System.out.print("New Username: ");
+                        String newUsername = scanner.nextLine();
+                        entry.setUsername(newUsername);
+
+                        System.out.print("New Password: ");
+                        String newPassword = scanner.nextLine();
+                        entry.setPassword(newPassword);
+
+                        System.out.print("New Notes: ");
+                        String newNotes = scanner.nextLine();
+                        entry.setNotes(newNotes);
+                    }
+
+                    break;
+                }
+
+                case 5: {
                     VaultStorage.save(vault, VAULT_FILE);
                     break;
+                }
 
-                case 4:
+                case 6: {
                     System.out.println("Goodbye!");
                     scanner.close();
                     return;
+                }
 
-                default:
+                default: {
                     System.out.println("Invalid choice");
+                }
             }
         }
 

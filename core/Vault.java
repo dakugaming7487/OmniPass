@@ -6,6 +6,22 @@ public class Vault {
 
     private ArrayList<PasswordEntry> entries;
 
+    public ArrayList<PasswordEntry> searchByWebsite(String website) {
+
+        ArrayList<PasswordEntry> results = new ArrayList<>();
+        website = website.toLowerCase();
+
+        for (PasswordEntry entry : entries) {
+            String web = entry.getWebsite();
+            if (web.contains(website)) {
+                results.add(entry);
+            }
+
+        }
+
+        return results;
+    }
+
     public ArrayList<PasswordEntry> getEntries() {
         return entries;
     }
