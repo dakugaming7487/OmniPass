@@ -34,6 +34,10 @@ public class Vault {
         entries.add(entry);
     }
 
+    public void removeEntry(PasswordEntry entry) {
+        entries.remove(entry);
+    }
+
     public void displayEntries() {
 
         if (entries.isEmpty()) {

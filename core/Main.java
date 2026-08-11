@@ -23,7 +23,8 @@ public class Main {
             System.out.println("3. Search Password");
             System.out.println("4. Edit Password");
             System.out.println("5. Save Vault");
-            System.out.println("6. Exit");
+            System.out.println("6. Delete Password");
+            System.out.println("7. Exit");
             System.out.print("Choice: ");
 
             int choice = scanner.nextInt();
@@ -106,6 +107,43 @@ public class Main {
                 }
 
                 case 6: {
+                    System.out.print("Website: ");
+                    String website = scanner.nextLine();
+
+                    ArrayList<PasswordEntry> results = vault.searchByWebsite(website);
+
+                    if (results.isEmpty()) {
+                        System.out.println("No matching Websites found");
+                    } else {
+                        int i = 1;
+                        for (PasswordEntry entry : results) {
+                            System.out.println(i + ".");
+                            entry.displaySummary();
+                            System.out.println("--------------------");
+                            i++;
+                        }
+
+                        System.out.print("Choose Entry: ");
+                        int selected = scanner.nextInt();
+                        scanner.nextLine();
+                        PasswordEntry entry = results.get(selected - 1);
+
+                        System.out.print("Are you sure (y/n): ");
+                        String Decision = scanner.nextLine();
+
+                        if (Decision.startsWith("y")) {
+                            vault.removeEntry(entry);
+                        } else if (Decision == "n") {
+                            System.out.println("Permission denied");
+                        } else {
+                            System.out.println("Unknown decision");
+                        }
+
+                    }
+                    break;
+                }
+
+                case 7: {
                     System.out.println("Goodbye!");
                     scanner.close();
                     return;
