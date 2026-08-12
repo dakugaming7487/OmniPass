@@ -5,10 +5,11 @@ import java.util.Scanner;
 import javax.crypto.SecretKey;
 
 import java.util.ArrayList;
-import core.storage.VaultStorage;
 import java.io.File;
 
 import core.security.MasterPassword;
+import core.storage.VaultStorage;
+import core.utils.PasswordGenerator;
 
 public class Main {
 
@@ -195,8 +196,67 @@ public class Main {
         System.out.print("Username: ");
         String username = scanner.nextLine();
 
-        System.out.print("Password: ");
-        String password = scanner.nextLine();
+        System.out.print("Generate a secure password(y/n): ");
+        String choice = scanner.nextLine();
+
+        String password;
+
+        if (choice.equalsIgnoreCase("y")) {
+            int length = 20;
+
+            while (true) {
+
+                System.out.print("Password Length (default: 20): ");
+                String input = scanner.nextLine();
+
+                if (input.isBlank()) {
+                    break;
+                }
+                try {
+                    length = Integer.parseInt(input);
+
+                    if (length < 4) {
+                        System.out.println("Password must be atleast 4 characters.");
+                        continue;
+                    }
+                    break;
+                } catch (NumberFormatException e) {
+                    System.out.println("Please enter a valid number.");
+                }
+            }
+
+            while (true) {
+                password = PasswordGenerator.generate(length);
+
+                System.out.println("\nGenerated Password: ");
+                System.out.println(password);
+
+                System.out.println("\n1. Use password");
+                System.out.println("2. Generate Another");
+                System.out.println("3. Enter Manualy");
+
+                System.out.println("Choice: ");
+                String option = scanner.nextLine();
+
+                if (option.equals("1")) {
+                    break;
+                }
+
+                if (option.equals("2")) {
+                    continue;
+                }
+
+                if (option.equals("3")) {
+                    System.out.print("Password: ");
+                    password = scanner.nextLine();
+                    break;
+                }
+            }
+
+        } else {
+            System.out.print("Password: ");
+            password = scanner.nextLine();
+        }
 
         System.out.print("Notes: ");
         String notes = scanner.nextLine();
