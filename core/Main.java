@@ -1,17 +1,36 @@
 package core;
 
 import java.util.Scanner;
+
+import javax.crypto.SecretKey;
+
 import java.util.ArrayList;
 import core.storage.VaultStorage;
+import java.io.File;
+
+import core.security.MasterPassword;
 
 public class Main {
 
-    private static final String VAULT_FILE = "data/vault.txt";
+    private static final String VAULT_FILE = "data/vault.dat";
 
     public static void main(String[] args) {
 
         Scanner scanner = new Scanner(System.in);
-        Vault vault = VaultStorage.load(VAULT_FILE);
+        File masterFile = new File("data/master.dat");
+        if (!masterFile.exists()) {
+            MasterPassword.create(scanner);
+        }
+
+        SecretKey key = MasterPassword.login(scanner);
+
+        if (key == null) {
+            scanner.close();
+            return;
+
+        }
+
+        Vault vault = VaultStorage.load(VAULT_FILE, key);
 
         while (true) {
             printMenu();
@@ -23,7 +42,7 @@ public class Main {
             switch (choice) {
 
                 case 1: {
-                    addPassword(scanner, vault);
+                    addPassword(scanner, vault, key);
                     break;
                 }
 
@@ -38,17 +57,17 @@ public class Main {
                 }
 
                 case 4: {
-                    editPassword(scanner, vault);
+                    editPassword(scanner, vault, key);
                     break;
                 }
 
                 case 5: {
-                    VaultStorage.save(vault, VAULT_FILE);
+                    VaultStorage.save(vault, VAULT_FILE, key);
                     break;
                 }
 
                 case 6: {
-                    deletePassword(scanner, vault);
+                    deletePassword(scanner, vault, key);
                     break;
                 }
 
@@ -109,7 +128,7 @@ public class Main {
         return results.get(selected - 1);
     }
 
-    private static void deletePassword(Scanner scanner, Vault vault) {
+    private static void deletePassword(Scanner scanner, Vault vault, SecretKey key) {
 
         PasswordEntry entry = selectEntry(scanner, vault);
 
@@ -123,10 +142,10 @@ public class Main {
         } else {
             System.out.println("Unknown decision");
         }
-        VaultStorage.save(vault, VAULT_FILE);
+        VaultStorage.save(vault, VAULT_FILE, key);
     }
 
-    private static void editPassword(Scanner scanner, Vault vault) {
+    private static void editPassword(Scanner scanner, Vault vault, SecretKey key) {
 
         PasswordEntry entry = selectEntry(scanner, vault);
 
@@ -150,7 +169,7 @@ public class Main {
         String newNotes = scanner.nextLine();
         entry.setNotes(newNotes);
 
-        VaultStorage.save(vault, VAULT_FILE);
+        VaultStorage.save(vault, VAULT_FILE, key);
     }
 
     private static void searchPassword(Scanner scanner, Vault vault) {
@@ -169,7 +188,7 @@ public class Main {
         }
     }
 
-    private static void addPassword(Scanner scanner, Vault vault) {
+    private static void addPassword(Scanner scanner, Vault vault, SecretKey key) {
         System.out.print("Website: ");
         String website = scanner.nextLine();
 
@@ -186,6 +205,6 @@ public class Main {
         vault.addEntry(entry);
 
         System.out.println("Password added successfully!");
-        VaultStorage.save(vault, VAULT_FILE);
+        VaultStorage.save(vault, VAULT_FILE, key);
     }
 }
