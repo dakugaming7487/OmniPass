@@ -1,4 +1,4 @@
-# PasswdManager
+# OmniPass
 
 A cross-platform, offline-firts password manager built in java.
 
@@ -25,7 +25,7 @@ A cross-platform, offline-firts password manager built in java.
 ## Projects structure
 
 ```
-passwd_manager/
+OmniPass/
 ├── android/
 ├── core/
 │   ├── crypto/
