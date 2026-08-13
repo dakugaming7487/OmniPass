@@ -1,4 +1,4 @@
-package core;
+package src.main.java.core;
 
 import java.util.Scanner;
 
@@ -7,9 +7,9 @@ import javax.crypto.SecretKey;
 import java.util.ArrayList;
 import java.io.File;
 
-import core.security.MasterPassword;
-import core.storage.VaultStorage;
-import core.utils.PasswordGenerator;
+import src.main.java.core.security.MasterPassword;
+import src.main.java.core.storage.VaultStorage;
+import src.main.java.core.utils.PasswordGenerator;
 
 public class Main {
 

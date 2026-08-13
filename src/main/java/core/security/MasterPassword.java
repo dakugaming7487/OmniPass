@@ -1,6 +1,6 @@
-package core.security;
+package src.main.java.core.security;
 
-import core.crypto.EncryptionManager;
+import src.main.java.core.crypto.EncryptionManager;
 
 import java.util.Scanner;
 

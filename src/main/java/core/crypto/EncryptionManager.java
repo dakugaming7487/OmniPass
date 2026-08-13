@@ -1,4 +1,4 @@
-package core.crypto;
+package src.main.java.core.crypto;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
