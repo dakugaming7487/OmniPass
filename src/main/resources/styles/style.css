@@ -1,0 +1,43 @@
+.root{
+    -fx-background-color: #121212;
+}
+
+.label{
+    -fx-text-fill: white;
+}
+
+.button{
+    -fx-background-color: #3B82F6;
+    -fx-text-fill: white;
+    -fx-backgroun-radius: 10;
+}
+
+.password-field{
+    -fx-background-radius: 10;
+}
+
+.text-feild{
+    -fx-background-color: #202020;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: #888888;
+
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+
+}
+
+.list-view{
+    -fxbackground-color: #181818;
+    -fx-control-inner-background: #181818;
+
+    -fx-border-color: transparent;
+}
+
+.list-cell{
+    -fx-background-color: #181818;
+    -fx-text-fill: white;
+}
+
+.list-cell:filled:seletcted{
+    -fx-background-color: #3B82F6;
+}

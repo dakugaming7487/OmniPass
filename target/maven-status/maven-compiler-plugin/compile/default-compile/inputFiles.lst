@@ -5,3 +5,6 @@
 /home/daku/Projects/OmniPass/src/main/java/core/security/MasterPassword.java
 /home/daku/Projects/OmniPass/src/main/java/core/storage/VaultStorage.java
 /home/daku/Projects/OmniPass/src/main/java/core/utils/PasswordGenerator.java
+/home/daku/Projects/OmniPass/src/main/java/gui/DashboardView.java
+/home/daku/Projects/OmniPass/src/main/java/gui/LoginView.java
+/home/daku/Projects/OmniPass/src/main/java/gui/OmniPassApp.java

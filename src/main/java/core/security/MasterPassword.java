@@ -1,6 +1,6 @@
-package src.main.java.core.security;
+package core.security;
 
-import src.main.java.core.crypto.EncryptionManager;
+import core.crypto.EncryptionManager;
 
 import java.util.Scanner;
 
@@ -12,6 +12,22 @@ import java.io.FileReader;
 import javax.crypto.SecretKey;
 
 public class MasterPassword {
+
+    public static SecretKey cli(Scanner scanner) {
+
+        System.out.print("Enter Master Password: ");
+        String enteredPassword = scanner.nextLine();
+
+        SecretKey key = authenticate(enteredPassword);
+
+        if (key != null) {
+            System.out.println("Access Granted!");
+        } else {
+            System.out.println("Incorrect Master Password.");
+        }
+
+        return key;
+    }
 
     public static void create(Scanner scanner) {
 
@@ -49,7 +65,7 @@ public class MasterPassword {
 
     }
 
-    public static SecretKey login(Scanner scanner) {
+    public static SecretKey authenticate(String enteredPassword) {
 
         try (BufferedReader reader = new BufferedReader(new FileReader("data/master.dat"))) {
 
@@ -67,17 +83,12 @@ public class MasterPassword {
 
             byte[] salt = EncryptionManager.hexToBytes(saltHex);
 
-            System.out.print("Enter Master Password: ");
-            String enteredPassword = scanner.nextLine();
-
             String enteredHash = EncryptionManager.pbkdf2Hash(enteredPassword, salt);
 
             if (savedHash.equals((enteredHash))) {
-                System.out.println("Access Granted!");
                 return EncryptionManager.deriveKey(enteredPassword, salt);
             }
 
-            System.out.println("Incorrect Master Password.");
             return null;
 
         } catch (IOException e) {

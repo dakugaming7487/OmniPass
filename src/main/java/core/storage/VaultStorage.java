@@ -1,8 +1,8 @@
-package src.main.java.core.storage;
+package core.storage;
 
-import src.main.java.core.PasswordEntry;
-import src.main.java.core.Vault;
-import src.main.java.core.crypto.EncryptionManager;
+import core.PasswordEntry;
+import core.Vault;
+import core.crypto.EncryptionManager;
 
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
