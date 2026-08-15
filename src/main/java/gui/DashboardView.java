@@ -1,10 +1,11 @@
 package gui;
 
+import gui.components.TopBar;
+
 import javafx.geometry.Insets;
 
 import javafx.scene.Parent;
-import javafx.scene.control.*;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.control.ListView;
 import javafx.scene.layout.*;
 
 public class DashboardView {
@@ -12,45 +13,20 @@ public class DashboardView {
     public Parent createContent() {
 
         BorderPane root = new BorderPane();
-
         root.setPadding(new Insets(20));
 
-        HBox topBar = createTopBar();
+        TopBar topBar = new TopBar();
 
-        VBox center = createCenter();
+        ListView<String> passowrdList = new ListView<>();
+
+        VBox center = new VBox();
+        VBox.setVgrow(passowrdList, Priority.ALWAYS);
+        center.getChildren().add(passowrdList);
 
         root.setTop(topBar);
         root.setCenter(center);
 
         return root;
 
-    }
-
-    private HBox createTopBar() {
-
-        TextField searchBar = new TextField();
-        searchBar.setPromptText("Search password");
-
-        Button addButton = new Button("+ Add Password");
-
-        HBox.setHgrow(searchBar, Priority.ALWAYS);
-
-        HBox topBar = new HBox(15);
-        topBar.getChildren().addAll(searchBar, addButton);
-
-        return topBar;
-    }
-
-    private VBox createCenter() {
-
-        ListView<String> passwordList = new ListView<>();
-
-        VBox center = new VBox();
-
-        VBox.setVgrow(passwordList, Priority.ALWAYS);
-
-        center.getChildren().add(passwordList);
-
-        return center;
     }
 }

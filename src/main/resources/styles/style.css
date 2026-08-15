@@ -27,10 +27,7 @@
 }
 
 .list-view{
-    -fxbackground-color: #181818;
-    -fx-control-inner-background: #181818;
-
-    -fx-border-color: transparent;
+    -fx-background
 }
 
 .list-cell{
