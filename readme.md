@@ -153,6 +153,10 @@ The current vault encryption uses AES-CBC. Future security work should move the 
 
 This project is currently developed primarily as a personal learning project. Suggestions, bug reports, and improvements are welcome.
 
+## 🏷️ Previous Names
+
+- **passwd_manager** — original project name
+
 ## 📄 License
 
 MIT License — see [`LICENSE`](LICENSE).
