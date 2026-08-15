@@ -1,7 +1,0 @@
-core/Main.class
-core/crypto/EncryptionManager.class
-core/security/MasterPassword.class
-core/storage/VaultStorage.class
-core/utils/PasswordGenerator.class
-core/PasswordEntry.class
-core/Vault.class
