@@ -12,6 +12,8 @@ import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 
 import core.security.MasterPassword;
+import core.storage.VaultStorage;
+
 import javax.crypto.SecretKey;
 
 public class LoginView {
@@ -46,8 +48,11 @@ public class LoginView {
                 return;
             }
 
-            Vault vault = new Vault();
-            VaultService vaultService = new VaultService(vault);
+            Vault vault = VaultStorage.load("data/vault.dat", key);
+
+            if (vault == null){vault = new Vault();}
+
+            VaultService vaultService = new VaultService(vault, key);
             DashboardView dashboard = new DashboardView(vaultService);
             Scene dashboardScene = new Scene(dashboard.createContent(), 900, 600);
             dashboardScene.getStylesheets().add(getClass().getResource("/styles/style.css").toExternalForm());

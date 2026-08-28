@@ -8,8 +8,9 @@ import javafx.geometry.Insets;
 
 import javafx.scene.Parent;
 import javafx.scene.layout.*;
-
 import javafx.scene.control.*;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 
 public class DashboardView {
 
@@ -196,16 +197,34 @@ public class DashboardView {
                 Label website = new Label(entry.getWebsite());
                 Label username = new Label(entry.getUsername());
 
+                Button copyUsernameButton = new Button("👤");
+                Button copyPasswordButton = new Button("🔑");
                 Button editButton = new Button("Edit");
                 Button deleteButton = new Button("Delete");
 
                 HBox info = new HBox(15, website, username);
-                HBox buttons = new HBox(10, editButton, deleteButton);
+                HBox buttons = new HBox(10, copyUsernameButton, copyPasswordButton, editButton, deleteButton);
 
                 Region spacer = new Region();
                 HBox.setHgrow(spacer, Priority.ALWAYS);
 
                 HBox row = new HBox(20, info, spacer, buttons);
+
+                copyUsernameButton.setOnAction(event -> {
+                    Clipboard clipboard = Clipboard.getSystemClipboard();
+                    ClipboardContent content = new ClipboardContent();
+
+                    content.putString(entry.getUsername());
+                    clipboard.setContent(content);
+                });
+
+                copyPasswordButton.setOnAction(event -> {
+                    Clipboard clipboard = Clipboard.getSystemClipboard();
+                    ClipboardContent content = new ClipboardContent();
+
+                    content.putString(entry.getPassword());
+                    clipboard.setContent(content);
+                });
 
                 setGraphic(row);
 
