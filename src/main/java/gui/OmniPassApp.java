@@ -15,6 +15,9 @@ public class OmniPassApp extends Application {
 
         scene.getStylesheets().add(getClass().getResource("/styles/style.css").toExternalForm());
 
+        ThemeManager.setTheme("Dark");
+        ThemeManager.applyTheme(scene, ThemeManager.getCurrentTheme());
+
         stage.setTitle("OmniPass");
         stage.setScene(scene);
         stage.show();

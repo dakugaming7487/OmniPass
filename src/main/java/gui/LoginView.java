@@ -1,5 +1,7 @@
 package gui;
 
+import core.Vault;
+
 import javafx.geometry.Pos;
 
 import javafx.stage.Stage;
@@ -44,9 +46,12 @@ public class LoginView {
                 return;
             }
 
-            DashboardView dashboard = new DashboardView();
+            Vault vault = new Vault();
+            VaultService vaultService = new VaultService(vault);
+            DashboardView dashboard = new DashboardView(vaultService);
             Scene dashboardScene = new Scene(dashboard.createContent(), 900, 600);
             dashboardScene.getStylesheets().add(getClass().getResource("/styles/style.css").toExternalForm());
+            ThemeManager.applyTheme(dashboardScene, ThemeManager.getCurrentTheme());
 
             stage.setScene(dashboardScene);
         });
