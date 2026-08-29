@@ -1,6 +1,8 @@
 package gui;
 
 import core.Vault;
+import core.security.MasterPassword;
+import core.storage.VaultStorage;
 
 import javafx.geometry.Pos;
 
@@ -11,14 +13,56 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 
-import core.security.MasterPassword;
-import core.storage.VaultStorage;
-
 import javax.crypto.SecretKey;
 
 public class LoginView {
 
     private PasswordField passwordField = new PasswordField();
+
+    private void login(Stage stage){
+        
+        String password = getPassword();
+
+        if (password.isBlank()){
+            showError("Please enter your master password");
+            return;
+        }
+
+        SecretKey key = MasterPassword.authenticate(password);
+
+        if (key == null){
+            showError("Incorrect master password.");
+            return;
+        }
+
+        Vault vault = VaultStorage.load("data/vault.dat", key);
+
+        if (vault == null){
+            vault = new Vault();
+        }
+
+        VaultService vaultService = new VaultService(vault, key);
+
+        DashboardView dashboard = new DashboardView(vaultService);
+
+        Scene dashboardScene = new Scene(dashboard.createContent(), 900, 600);
+
+        dashboardScene.getStylesheets().add(getClass().getResource("/styles/style.css").toExternalForm());
+
+        ThemeManager.applyTheme(dashboardScene, ThemeManager.getCurrentTheme());
+
+        stage.setScene(dashboardScene);
+    }
+
+    private void showError(String message){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+
+        alert.setTitle("Login failed");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+
+        alert.showAndWait();
+    }
 
     public Parent createContent(Stage stage) {
 
@@ -29,37 +73,11 @@ public class LoginView {
         passwordField.setMaxWidth(250);
         passwordField.setPromptText("Enter master password");
 
-        Button loginButton = new Button("Unlock Vault");
+        Button loginButton = new Button("Unlock");
         loginButton.setMaxWidth(250);
-        loginButton.setOnAction(event -> {
+        loginButton.setOnAction(event -> login(stage));
 
-            String password = getPassword();
-
-            SecretKey key = MasterPassword.authenticate(password);
-
-            if (key == null) {
-
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Login Failed");
-                alert.setHeaderText(null);
-                alert.setContentText("Incorrect master password.");
-                alert.showAndWait();
-
-                return;
-            }
-
-            Vault vault = VaultStorage.load("data/vault.dat", key);
-
-            if (vault == null){vault = new Vault();}
-
-            VaultService vaultService = new VaultService(vault, key);
-            DashboardView dashboard = new DashboardView(vaultService);
-            Scene dashboardScene = new Scene(dashboard.createContent(), 900, 600);
-            dashboardScene.getStylesheets().add(getClass().getResource("/styles/style.css").toExternalForm());
-            ThemeManager.applyTheme(dashboardScene, ThemeManager.getCurrentTheme());
-
-            stage.setScene(dashboardScene);
-        });
+        passwordField.setOnAction(event -> login(stage));
 
         VBox root = new VBox(20);
 

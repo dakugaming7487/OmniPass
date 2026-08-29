@@ -8,7 +8,8 @@ Thumbs.db
 # java 
 *.class
 
-data/*
+data/master.dat
+data/vault.dat
 target/*
 
 .idea/*

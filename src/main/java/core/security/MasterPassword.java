@@ -4,14 +4,40 @@ import core.crypto.EncryptionManager;
 
 import java.util.Scanner;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.*;
 
 import javax.crypto.SecretKey;
 
 public class MasterPassword {
+
+    private static final String MASTER_FILE = "data/master.dat";
+
+    private static Boolean generator(String password){
+
+        try (FileWriter writer = new FileWriter(MASTER_FILE)) {
+
+            byte[] salt = EncryptionManager.generateSalt();
+
+            String saltHex = EncryptionManager.bytesToHex(salt);
+
+            String hash = EncryptionManager.pbkdf2Hash(password, salt);
+
+            writer.write(saltHex + ":" + hash);
+
+            return true;
+
+        } catch (FileNotFoundException e){
+            System.out.println("file not there");
+            return false;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static boolean exists(){
+        return new java.io.File(MASTER_FILE).exists();
+    }
 
     public static SecretKey cli(Scanner scanner) {
 
@@ -44,30 +70,30 @@ public class MasterPassword {
                 continue;
             }
 
-            try (FileWriter writer = new FileWriter("data/master.dat")) {
+            boolean created = generator(password);
 
-                byte[] salt = EncryptionManager.generateSalt();
-
-                String saltHex = EncryptionManager.bytesToHex(salt);
-
-                String hash = EncryptionManager.pbkdf2Hash(password, salt);
-
-                writer.write(saltHex + ":" + hash);
-            } catch (IOException e) {
-                System.out.println("Failed to create master password.");
-                e.printStackTrace();
+            if (created == false){
+                System.out.println("Master password was not created");
                 return;
             }
-
-            System.out.println("Master password created successfully!");
-            return;
+            else{
+                System.out.println("Master password created successfully!");
+                return;
+            }
         }
 
     }
 
+    public static void create(String password){
+
+        boolean created = generator(password);
+        if (created) {}
+        return;
+    }
+
     public static SecretKey authenticate(String enteredPassword) {
 
-        try (BufferedReader reader = new BufferedReader(new FileReader("data/master.dat"))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(MASTER_FILE))) {
 
             String line = reader.readLine();
 
@@ -91,7 +117,7 @@ public class MasterPassword {
 
             return null;
 
-        } catch (IOException e) {
+        }catch (IOException e) {
             System.out.println("Failed to read master password.");
             e.printStackTrace();
             return null;

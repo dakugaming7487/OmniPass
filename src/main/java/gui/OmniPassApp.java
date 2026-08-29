@@ -1,6 +1,9 @@
 package gui;
 
+import core.security.MasterPassword;
+
 import javafx.application.Application;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
@@ -9,14 +12,29 @@ public class OmniPassApp extends Application {
     @Override
     public void start(Stage stage) {
 
-        LoginView loginView = new LoginView();
+        Parent root;
 
-        Scene scene = new Scene(loginView.createContent(stage), 500, 300);
+        if (MasterPassword.exists()) {
+            LoginView loginView = new LoginView();
+            root = loginView.createContent(stage);
+        } else {
+            MasterPasswordSetupView setupView =
+                    new MasterPasswordSetupView();
+            root = setupView.createcontent(stage);
+        }
 
-        scene.getStylesheets().add(getClass().getResource("/styles/style.css").toExternalForm());
+        Scene scene = new Scene(root, 500, 300);
 
-        ThemeManager.setTheme("Dark");
-        ThemeManager.applyTheme(scene, ThemeManager.getCurrentTheme());
+        scene.getStylesheets().add(
+                getClass()
+                        .getResource("/styles/style.css")
+                        .toExternalForm()
+        );
+
+        ThemeManager.applyTheme(
+                scene,
+                ThemeManager.getCurrentTheme()
+        );
 
         stage.setTitle("OmniPass");
         stage.setScene(scene);
