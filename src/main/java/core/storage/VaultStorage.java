@@ -73,8 +73,6 @@ public class VaultStorage {
 
             writer.write(encrypted);
 
-            System.out.println("Vault saved successfully.");
-
         } catch (FileNotFoundException e) {
 
             System.out.println("No existing vault found. Starting with an empty vault.");

@@ -5,7 +5,7 @@ import gui.components.TopBar;
 import core.PasswordEntry;
 
 import javafx.geometry.Insets;
-
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.layout.*;
 import javafx.scene.control.*;
@@ -145,7 +145,7 @@ public class DashboardView {
 
                 if (website.isBlank()||username.isBlank()){
                     
-                    if (password.isBlank()){password = entry.getPassword(); return null;}
+                    if (password.isBlank()){password = entry.getPassword();}
                     return null;
                 }
 
@@ -159,6 +159,129 @@ public class DashboardView {
         });
 
         dialog.showAndWait();
+    }
+
+    private void showPasswordDetails(PasswordEntry entry, ListView<PasswordEntry> passwordList){
+
+        BorderPane detailsRoot = new BorderPane();
+        detailsRoot.setPadding(new Insets(20));
+
+        Button backButton = new Button("<-");
+        
+        Label title = new Label(entry.getWebsite());
+        title.setStyle("-fx-font-size: 22px;" + "-fx-font-weight: bold;");
+
+        HBox header = new HBox(15, backButton, title);
+        header.setAlignment(Pos.CENTER_LEFT);
+
+        backButton.setOnAction(event -> {root.setCenter(passwordCenter);});
+
+        Label usernameTitle = new Label("Username");
+        usernameTitle.setStyle("-fx-font-size: 13px");
+
+        Label usernameValue = new Label(entry.getUsername());
+        usernameValue.setStyle("-fx-font-size: 16px");
+
+        Button copyUsernameButton = new Button("📋");
+
+        copyUsernameButton.setOnAction(event ->{
+            Clipboard clipboard = Clipboard.getSystemClipboard();
+            ClipboardContent content = new ClipboardContent();
+
+            content.putString(entry.getUsername());
+            clipboard.setContent(content);
+        });
+
+        HBox usernameHeader = new HBox(10, usernameTitle, new Region(), copyUsernameButton);
+        HBox.setHgrow(usernameHeader.getChildren().get(1), Priority.ALWAYS);
+
+        VBox usernameBox = new VBox(8, usernameHeader, usernameValue);
+        usernameBox.setPadding(new Insets(15));
+
+        Label passwordTitle = new Label("Password");
+        passwordTitle.setStyle("-fx-font-size: 13px;");
+
+        PasswordField hiddenPassword = new PasswordField();
+        hiddenPassword.setText(entry.getPassword());
+        hiddenPassword.setEditable(false);
+
+        TextField visiblePassword = new TextField(entry.getPassword());
+        visiblePassword.setEditable(false);
+        visiblePassword.setVisible(false);
+        visiblePassword.setManaged(false);
+
+        Button showPasswordButton = new Button("👁");
+        Button copyPasswordButton = new Button("📋");
+
+        showPasswordButton.setOnAction(event -> {
+
+            boolean showing = visiblePassword.isVisible();
+
+            visiblePassword.setVisible(!showing);
+            visiblePassword.setManaged(!showing);
+
+            hiddenPassword.setVisible(showing);
+            hiddenPassword.setManaged(showing);
+        });
+
+        copyPasswordButton.setOnAction(event ->{
+            Clipboard clipboard = Clipboard.getSystemClipboard();
+            ClipboardContent content = new ClipboardContent();
+
+            content.putString(entry.getPassword());
+            clipboard.setContent(content);
+        });
+
+        HBox passwordButtons = new HBox(8, showPasswordButton, copyPasswordButton);
+
+        Region passwordSpacer = new Region();
+        HBox passwordHeader = new HBox(10, passwordTitle, passwordSpacer, passwordButtons);
+
+        VBox passwordBox = new VBox(8, passwordHeader, hiddenPassword, visiblePassword);
+
+        passwordBox.setPadding(new Insets(15));
+
+        Label notesTitle = new Label("Notes");
+        notesTitle.setStyle("-fx-font-size: 13px;");
+
+        String notes = entry.getNotes();
+
+        Label notesValue = new Label(notes == null || notes.isBlank() ?"No notes added" : notes);
+
+        notesValue.setWrapText(true);
+        notesValue.setStyle("-fx-font-size: 15px;");
+
+        VBox notesBox = new VBox(8, notesTitle, notesValue);
+        notesBox.setPadding(new Insets(15));
+
+        VBox content = new VBox(15, usernameBox, passwordBox, notesBox);
+
+        VBox.setVgrow(notesBox, Priority.NEVER);
+
+        detailsRoot.setTop(header);
+        detailsRoot.setCenter(content);
+
+        Button editButton = new Button("Edit");
+        Button deleteButton = new Button("Delete");
+
+        editButton.setOnAction(event -> {showEditPasswordDialog(entry, passwordList);});
+        
+        deleteButton.setOnAction(event -> {
+            vaultService.deleteEntry(entry);
+            passwordList.getItems().remove(entry);
+            root.setCenter(passwordCenter);
+        });
+
+        HBox actions = new HBox(10, editButton, deleteButton);
+        actions.setAlignment(Pos.CENTER_RIGHT);
+        actions.setPadding(new Insets(20,0,0,0));
+
+        detailsRoot.setBottom(actions);
+
+        root.setCenter(detailsRoot);
+
+        ThemeManager.applyThemeToRoot(root, ThemeManager.getCurrentTheme());
+
     }
 
     public Parent createContent() {
@@ -185,57 +308,38 @@ public class DashboardView {
         return new ListCell<PasswordEntry>() {
 
             @Override
-            protected void updateItem(PasswordEntry entry, boolean empty) {
+            protected void updateItem(PasswordEntry entry, boolean empty){
                 super.updateItem(entry, empty);
 
-                if (empty || entry == null) {
+                if (empty || entry == null){
                     setText(null);
                     setGraphic(null);
                     return;
                 }
 
                 Label website = new Label(entry.getWebsite());
+                website.setStyle("-fx-font-size: 13px;" + "-fx-text-fill: #888888;");
+
                 Label username = new Label(entry.getUsername());
+                username.setStyle("-fx-font-size: 13px;" + "-fx-text-fill: #888888;");
 
-                Button copyUsernameButton = new Button("👤");
-                Button copyPasswordButton = new Button("🔑");
-                Button editButton = new Button("Edit");
-                Button deleteButton = new Button("Delete");
+                VBox info = new VBox(4,website,username);
 
-                HBox info = new HBox(15, website, username);
-                HBox buttons = new HBox(10, copyUsernameButton, copyPasswordButton, editButton, deleteButton);
+                Label arrow = new Label(">");
+                arrow.setStyle("-fx-font-size: 20px" + "-fx-text-fill: #888888;");
 
                 Region spacer = new Region();
                 HBox.setHgrow(spacer, Priority.ALWAYS);
 
-                HBox row = new HBox(20, info, spacer, buttons);
+                HBox row = new HBox(15, info, spacer, arrow);
 
-                copyUsernameButton.setOnAction(event -> {
-                    Clipboard clipboard = Clipboard.getSystemClipboard();
-                    ClipboardContent content = new ClipboardContent();
-
-                    content.putString(entry.getUsername());
-                    clipboard.setContent(content);
-                });
-
-                copyPasswordButton.setOnAction(event -> {
-                    Clipboard clipboard = Clipboard.getSystemClipboard();
-                    ClipboardContent content = new ClipboardContent();
-
-                    content.putString(entry.getPassword());
-                    clipboard.setContent(content);
-                });
+                row.setPadding(new Insets(12,15,12,15));
+                row.setAlignment(Pos.CENTER_LEFT);
 
                 setGraphic(row);
+                setText(null);
 
-                deleteButton.setOnAction(event -> {
-                    vaultService.deleteEntry(entry);
-                    passwordList.getItems().remove(entry);
-                });
-
-                editButton.setOnAction(event -> {
-                    showEditPasswordDialog(entry, passwordList);
-                });
+                setOnMouseClicked(event ->{if (event.getClickCount() == 1){showPasswordDetails(entry, passwordList);}});
             }
         };
     });
