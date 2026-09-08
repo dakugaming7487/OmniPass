@@ -126,13 +126,17 @@ Dashboard
 - [x] Search bar UI
 - [x] Add Password button UI
 - [x] Settings button UI
-- [ ] Password list UI
-- [ ] Add password dialog
-- [ ] Edit password dialog
-- [ ] Search functionality
-- [ ] Settings page
-- [ ] Light theme
-- [ ] Theme manager
+- [x] Password list UI
+- [x] Add password dialog
+- [x] Edit password dialog
+- [x] Search foundation
+- [x] Settings page
+- [x] Light theme
+- [x] Dark theme
+- [x] Theme manager
+- [ ] Settings functionality
+- [ ] Import/Export
+- [ ] Erase button
 
 ### v1.0.0 — Stable Release
 
@@ -142,6 +146,11 @@ Dashboard
 - [ ] Documentation
 - [ ] Packaging / distribution
 - [ ] Security review
+- [ ] AES-GCM migration
+- [ ] Change master password
+- [ ] Import/export vault
+- [ ] Delete/reset vault
+
 
 ## ⚠️ Security Status
 
