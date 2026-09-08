@@ -34,6 +34,101 @@
 
 
 /* =========================
+   DARK THEME - DIALOG
+   ========================= */
+
+.dark-theme.dialog-pane {
+    -fx-background-color: #121212;
+    -fx-border-color: #3B82F6;
+    -fx-border-radius: 15;
+    -fx-background-radius: 15;
+}
+
+
+/* Dialog header */
+
+.dark-theme.dialog-pane > .header-panel {
+    -fx-background-color: #121212;
+}
+
+.dark-theme.dialog-pane > .header-panel .label {
+    -fx-text-fill: white;
+}
+
+
+/* Dialog content */
+
+.dark-theme.dialog-pane > .content {
+    -fx-background-color: #121212;
+}
+
+.dark-theme.dialog-pane > .content .label {
+    -fx-text-fill: white;
+}
+
+
+/* Dialog button area */
+
+.dark-theme.dialog-pane > .button-bar {
+    -fx-background-color: #121212;
+}
+
+.dark-theme.dialog-pane > .button-bar > .container {
+    -fx-background-color: #121212;
+}
+
+
+/* Dialog buttons */
+
+.dark-theme.dialog-pane .button {
+    -fx-background-color: #3B82F6;
+    -fx-text-fill: white;
+    -fx-background-radius: 10;
+}
+
+.dark-theme.dialog-pane .button:hover {
+    -fx-background-color: #2563EB;
+}
+
+
+/* Dialog text fields */
+
+.dark-theme.dialog-pane .text-field,
+.dark-theme.dialog-pane .password-field {
+    -fx-background-color: #202020;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: #888888;
+    -fx-border-color: transparent;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+}
+
+
+/* Dialog text area */
+
+.dark-theme.dialog-pane .text-area {
+    -fx-background-color: #202020;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: #888888;
+    -fx-border-color: transparent;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+}
+
+.dark-theme.dialog-pane .text-area .content {
+    -fx-background-color: #202020;
+}
+
+.dark-theme.dialog-pane .text-area .scroll-pane {
+    -fx-background-color: #202020;
+}
+
+.dark-theme.dialog-pane .text-area .viewport {
+    -fx-background-color: #202020;
+}
+
+
+/* =========================
    LIGHT THEME
    ========================= */
 
@@ -65,6 +160,34 @@
 .light-theme .list-cell {
     -fx-background-color: #FFFFFF;
     -fx-text-fill: #111111;
+}
+
+
+/* =========================
+   LIGHT THEME - DIALOG
+   ========================= */
+
+.light-theme.dialog-pane {
+    -fx-background-color: #F5F5F5;
+    -fx-border-color: #3B82F6;
+    -fx-border-radius: 15;
+    -fx-background-radius: 15;
+}
+
+.light-theme.dialog-pane > .header-panel {
+    -fx-background-color: #F5F5F5;
+}
+
+.light-theme.dialog-pane > .content {
+    -fx-background-color: #F5F5F5;
+}
+
+.light-theme.dialog-pane > .button-bar {
+    -fx-background-color: #F5F5F5;
+}
+
+.light-theme.dialog-pane > .button-bar > .container {
+    -fx-background-color: #F5F5F5;
 }
 
 

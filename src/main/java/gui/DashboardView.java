@@ -21,8 +21,13 @@ public class DashboardView {
 
     private final VaultService vaultService;
 
-    public DashboardView(VaultService vaultService){
-        this.vaultService = vaultService;
+    public DashboardView(VaultService vaultService){this.vaultService = vaultService;}
+    
+    private void applyDialogTheme(Dialog<?> dialog){
+        DialogPane dialogPane = dialog.getDialogPane();
+        String css = getClass().getResource("/styles/style.css").toExternalForm();
+        if (!dialogPane.getStylesheets().contains(css)){dialogPane.getStylesheets().add(css);}
+        ThemeManager.applyThemeToRoot(dialogPane,ThemeManager.getCurrentTheme());
     }
 
     private void showAddPaddwordDialog(ListView<PasswordEntry> passwordList){
@@ -32,9 +37,9 @@ public class DashboardView {
         dialog.setTitle("Add Password");
         dialog.setHeaderText("Add a new password");
 
-        ButtonType saveButton = new ButtonType("Save",ButtonBar.ButtonData.OK_DONE);
+        ButtonType saveButton = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
 
-        dialog.getDialogPane().getButtonTypes().addAll(saveButton,ButtonType.CANCEL);
+        dialog.getDialogPane().getButtonTypes().addAll(saveButton, ButtonType.CANCEL);
 
         TextField websitesField = new TextField();
         websitesField.setPromptText("Website");
@@ -55,21 +60,21 @@ public class DashboardView {
         grid.setVgap(10);
         grid.setPadding(new Insets(20));
 
-        grid.add(new Label("Website:"),0,0);
-        grid.add(websitesField,1,0);
-        
-        grid.add(new Label("Username:"),0,1);
-        grid.add(usernameField,1,1);
+        grid.add(new Label("Website:"), 0, 0);
+        grid.add(websitesField, 1, 0);
 
-        grid.add(new Label("Password:"),0,2);
-        grid.add(passwordField,1,2);
+        grid.add(new Label("Username:"), 0, 1);
+        grid.add(usernameField, 1, 1);
 
-        grid.add(new Label("Notes:"),0,3);
-        grid.add(notesField,1,3);
+        grid.add(new Label("Password:"), 0, 2);
+        grid.add(passwordField, 1, 2);
+
+        grid.add(new Label("Notes:"), 0, 3);
+        grid.add(notesField, 1, 3);
 
         dialog.getDialogPane().setContent(grid);
 
-        dialog.setResultConverter(button->{
+        dialog.setResultConverter(button -> {
 
             if (button == saveButton){
                 String website = websitesField.getText();
@@ -77,11 +82,9 @@ public class DashboardView {
                 String password = passwordField.getText();
                 String notes = notesField.getText();
 
-                if(website.isBlank() || username.isBlank() || password.isBlank()){
-                    return null;
-                }
+                if (website.isBlank()|| username.isBlank()|| password.isBlank()){return null;}
 
-                vaultService.addEntry(website, username, password, notes);
+                vaultService.addEntry(website,username,password,notes);
 
                 passwordList.getItems().setAll(vaultService.getEntries());
             }
@@ -89,6 +92,7 @@ public class DashboardView {
             return button;
         });
 
+        applyDialogTheme(dialog);
         dialog.showAndWait();
     }
 
@@ -120,21 +124,21 @@ public class DashboardView {
         grid.setVgap(10);
         grid.setPadding(new Insets(20));
 
-        grid.add(new Label("Website:"),0,0);
-        grid.add(websiteField,1,0);
-        
-        grid.add(new Label("Username:"),0,1);
-        grid.add(usernameField,1,1);
+        grid.add(new Label("Website:"), 0, 0);
+        grid.add(websiteField, 1, 0);
 
-        grid.add(new Label("Password:"),0,2);
-        grid.add(passwordField,1,2);
+        grid.add(new Label("Username:"), 0, 1);
+        grid.add(usernameField, 1, 1);
 
-        grid.add(new Label("Notes:"),0,3);
-        grid.add(notesField,1,3);
+        grid.add(new Label("Password:"), 0, 2);
+        grid.add(passwordField, 1, 2);
+
+        grid.add(new Label("Notes:"), 0, 3);
+        grid.add(notesField, 1, 3);
 
         dialog.getDialogPane().setContent(grid);
 
-        dialog.setResultConverter(button->{
+        dialog.setResultConverter(button -> {
 
             if (button == saveButton){
 
@@ -143,33 +147,31 @@ public class DashboardView {
                 String password = passwordField.getText();
                 String notes = notesField.getText();
 
-                if (website.isBlank()||username.isBlank()){
-                    
+                if (website.isBlank() || username.isBlank()){
                     if (password.isBlank()){password = entry.getPassword();}
                     return null;
                 }
 
-                vaultService.updateEntry(entry, website, username, password, notes);
+                vaultService.updateEntry(entry,website,username,password,notes);
 
-                passwordList.getItems().setAll(vaultService.getEntries());
-            };
+                passwordList.getItems().setAll(vaultService.getEntries());}
 
             return button;
-
         });
 
+        applyDialogTheme(dialog);
         dialog.showAndWait();
     }
 
-    private void showPasswordDetails(PasswordEntry entry, ListView<PasswordEntry> passwordList){
+    private void showPasswordDetails(PasswordEntry entry,ListView<PasswordEntry> passwordList){
 
         BorderPane detailsRoot = new BorderPane();
         detailsRoot.setPadding(new Insets(20));
 
         Button backButton = new Button("<-");
-        
+
         Label title = new Label(entry.getWebsite());
-        title.setStyle("-fx-font-size: 22px;" + "-fx-font-weight: bold;");
+        title.setStyle("-fx-font-size: 22px;"+ "-fx-font-weight: bold;");
 
         HBox header = new HBox(15, backButton, title);
         header.setAlignment(Pos.CENTER_LEFT);
@@ -184,7 +186,7 @@ public class DashboardView {
 
         Button copyUsernameButton = new Button("📋");
 
-        copyUsernameButton.setOnAction(event ->{
+        copyUsernameButton.setOnAction(event -> {
             Clipboard clipboard = Clipboard.getSystemClipboard();
             ClipboardContent content = new ClipboardContent();
 
@@ -192,10 +194,10 @@ public class DashboardView {
             clipboard.setContent(content);
         });
 
-        HBox usernameHeader = new HBox(10, usernameTitle, new Region(), copyUsernameButton);
-        HBox.setHgrow(usernameHeader.getChildren().get(1), Priority.ALWAYS);
+        HBox usernameHeader = new HBox(10,usernameTitle,new Region(),copyUsernameButton);
+        HBox.setHgrow(usernameHeader.getChildren().get(1),Priority.ALWAYS);
 
-        VBox usernameBox = new VBox(8, usernameHeader, usernameValue);
+        VBox usernameBox = new VBox(8,usernameHeader,usernameValue);
         usernameBox.setPadding(new Insets(15));
 
         Label passwordTitle = new Label("Password");
@@ -214,7 +216,6 @@ public class DashboardView {
         Button copyPasswordButton = new Button("📋");
 
         showPasswordButton.setOnAction(event -> {
-
             boolean showing = visiblePassword.isVisible();
 
             visiblePassword.setVisible(!showing);
@@ -224,20 +225,23 @@ public class DashboardView {
             hiddenPassword.setManaged(showing);
         });
 
-        copyPasswordButton.setOnAction(event ->{
+
+        copyPasswordButton.setOnAction(event -> {
             Clipboard clipboard = Clipboard.getSystemClipboard();
             ClipboardContent content = new ClipboardContent();
-
             content.putString(entry.getPassword());
             clipboard.setContent(content);
         });
 
-        HBox passwordButtons = new HBox(8, showPasswordButton, copyPasswordButton);
+        HBox passwordButtons = new HBox(8,showPasswordButton,copyPasswordButton);
 
         Region passwordSpacer = new Region();
-        HBox passwordHeader = new HBox(10, passwordTitle, passwordSpacer, passwordButtons);
 
-        VBox passwordBox = new VBox(8, passwordHeader, hiddenPassword, visiblePassword);
+        HBox passwordHeader = new HBox(10,passwordTitle,passwordSpacer,passwordButtons);
+
+        HBox.setHgrow(passwordSpacer,Priority.ALWAYS);
+
+        VBox passwordBox = new VBox(8,passwordHeader,hiddenPassword,visiblePassword);
 
         passwordBox.setPadding(new Insets(15));
 
@@ -246,137 +250,144 @@ public class DashboardView {
 
         String notes = entry.getNotes();
 
-        Label notesValue = new Label(notes == null || notes.isBlank() ?"No notes added" : notes);
-
+        Label notesValue = new Label(notes == null || notes.isBlank()? "No notes added": notes);
         notesValue.setWrapText(true);
         notesValue.setStyle("-fx-font-size: 15px;");
 
-        VBox notesBox = new VBox(8, notesTitle, notesValue);
+        VBox notesBox = new VBox(8,notesTitle,notesValue);
         notesBox.setPadding(new Insets(15));
 
-        VBox content = new VBox(15, usernameBox, passwordBox, notesBox);
+        VBox content = new VBox(15,usernameBox,passwordBox,notesBox);
 
-        VBox.setVgrow(notesBox, Priority.NEVER);
+        VBox.setVgrow(notesBox,Priority.NEVER);
 
         detailsRoot.setTop(header);
         detailsRoot.setCenter(content);
 
         Button editButton = new Button("Edit");
+
         Button deleteButton = new Button("Delete");
 
-        editButton.setOnAction(event -> {showEditPasswordDialog(entry, passwordList);});
-        
+        editButton.setOnAction(event -> {showEditPasswordDialog(entry,passwordList);});
+
         deleteButton.setOnAction(event -> {
             vaultService.deleteEntry(entry);
             passwordList.getItems().remove(entry);
             root.setCenter(passwordCenter);
         });
 
-        HBox actions = new HBox(10, editButton, deleteButton);
+        HBox actions = new HBox(10,editButton,deleteButton);
+
         actions.setAlignment(Pos.CENTER_RIGHT);
-        actions.setPadding(new Insets(20,0,0,0));
+
+        actions.setPadding(new Insets(20, 0, 0, 0));
 
         detailsRoot.setBottom(actions);
 
         root.setCenter(detailsRoot);
 
-        ThemeManager.applyThemeToRoot(root, ThemeManager.getCurrentTheme());
-
+        ThemeManager.applyThemeToRoot(root,ThemeManager.getCurrentTheme());
     }
 
-    public Parent createContent() {
 
-    root = new BorderPane();
-    root.setPadding(new Insets(20));
+    public Parent createContent(){
 
-    passwordList = new ListView<>();
-    passwordList.getItems().setAll(vaultService.getEntries());
+        root = new BorderPane();
 
-    TopBar topBar = new TopBar();
+        root.setPadding(new Insets(20));
 
-    topBar.getAddButton().setOnAction(
-        event -> showAddPaddwordDialog(passwordList)
-    );
+        passwordList = new ListView<>();
 
-    topBar.getSettingsButton().setOnAction(
-        event -> showSettings()
-    );
+        passwordList.getItems().setAll(vaultService.getEntries());
 
-    root.setTop(topBar);
+        TopBar topBar = new TopBar();
 
-    passwordList.setCellFactory(list -> {
-        return new ListCell<PasswordEntry>() {
+        topBar.getAddButton().setOnAction(event -> showAddPaddwordDialog(passwordList));
 
-            @Override
-            protected void updateItem(PasswordEntry entry, boolean empty){
-                super.updateItem(entry, empty);
+        topBar.getSettingsButton().setOnAction(event -> showSettings());
 
-                if (empty || entry == null){
+        root.setTop(topBar);
+
+        passwordList.setCellFactory(list -> {
+
+            return new ListCell<PasswordEntry>() {
+                @Override
+                protected void updateItem(
+                        PasswordEntry entry,
+                        boolean empty
+                ){super.updateItem(entry,empty);
+
+                    if (empty || entry == null){
+                        setText(null);
+                        setGraphic(null);
+                        return;}
+
+                    Label website =new Label(entry.getWebsite());
+
+                    website.setStyle("-fx-font-size: 13px;"+ "-fx-text-fill: #888888;");
+
+                    Label username =new Label(entry.getUsername());
+
+                    username.setStyle("-fx-font-size: 13px;"+ "-fx-text-fill: #888888;");
+
+                    VBox info = new VBox(4,website,username);
+
+                    Label arrow = new Label(">");
+
+                    arrow.setStyle("-fx-font-size: 20px;"+ "-fx-text-fill: #888888;");
+
+                    Region spacer = new Region();
+
+                    HBox.setHgrow(spacer,Priority.ALWAYS);
+
+                    HBox row = new HBox(15,info,spacer,arrow);
+
+                    row.setPadding(new Insets(12,15,12,15));
+
+                    row.setAlignment(Pos.CENTER_LEFT);
+
+                    setGraphic(row);
                     setText(null);
-                    setGraphic(null);
-                    return;
-                }
 
-                Label website = new Label(entry.getWebsite());
-                website.setStyle("-fx-font-size: 13px;" + "-fx-text-fill: #888888;");
-
-                Label username = new Label(entry.getUsername());
-                username.setStyle("-fx-font-size: 13px;" + "-fx-text-fill: #888888;");
-
-                VBox info = new VBox(4,website,username);
-
-                Label arrow = new Label(">");
-                arrow.setStyle("-fx-font-size: 20px" + "-fx-text-fill: #888888;");
-
-                Region spacer = new Region();
-                HBox.setHgrow(spacer, Priority.ALWAYS);
-
-                HBox row = new HBox(15, info, spacer, arrow);
-
-                row.setPadding(new Insets(12,15,12,15));
-                row.setAlignment(Pos.CENTER_LEFT);
-
-                setGraphic(row);
-                setText(null);
-
-                setOnMouseClicked(event ->{if (event.getClickCount() == 1){showPasswordDetails(entry, passwordList);}});
+                    setOnMouseClicked(event -> {if (event.getClickCount() == 1){showPasswordDetails(entry,passwordList);}});
             }
-        };
-    });
+        };});
 
-    passwordCenter = new VBox();
-    VBox.setVgrow(passwordList, Priority.ALWAYS);
-    passwordCenter.getChildren().add(passwordList);
 
-    root.setCenter(passwordCenter);
+        passwordCenter = new VBox();
 
-    ThemeManager.applyThemeToRoot(
-        root,
-        ThemeManager.getCurrentTheme()
-    );
+        VBox.setVgrow(passwordList,Priority.ALWAYS);
 
-    return root;
-}
+        passwordCenter.getChildren().add(passwordList);
 
-    private void showSettings() {
+        root.setCenter(passwordCenter);
 
-        SettingsView settingsView = new SettingsView(this::showDashboard);
+        ThemeManager.applyThemeToRoot(root,ThemeManager.getCurrentTheme());
+
+        return root;
+    }
+
+
+    private void showSettings(){
+
+        SettingsView settingsView =new SettingsView(this::showDashboard);
 
         root.setTop(null);
         root.setCenter(settingsView.createContent());
     }
 
-    private void showDashboard() {
 
-        TopBar topBar = new TopBar();  
+    private void showDashboard(){
 
-        topBar.getAddButton().setOnAction(event->showAddPaddwordDialog(passwordList));
+        TopBar topBar = new TopBar();
 
-        topBar.getSettingsButton().setOnAction(event -> showSettings());
+        topBar.getAddButton().setOnAction(event ->showAddPaddwordDialog(passwordList));
+
+        topBar.getSettingsButton().setOnAction(event ->showSettings());
 
         root.setTop(topBar);
         root.setCenter(passwordCenter);
 
-        ThemeManager.applyThemeToRoot(root, ThemeManager.getCurrentTheme());
+        ThemeManager.applyThemeToRoot(root,ThemeManager.getCurrentTheme());
     }
 }
