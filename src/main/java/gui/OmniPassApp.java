@@ -7,10 +7,15 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.io.File;
+
 public class OmniPassApp extends Application {
 
     @Override
     public void start(Stage stage) {
+
+        File dataDirectory = new File("data");
+        if (!dataDirectory.exists()){dataDirectory.mkdir();}
 
         Parent root;
 
