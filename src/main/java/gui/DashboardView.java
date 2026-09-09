@@ -370,7 +370,7 @@ public class DashboardView {
 
     private void showSettings(){
 
-        SettingsView settingsView =new SettingsView(this::showDashboard);
+        SettingsView settingsView = new SettingsView(vaultService,this::showDashboard);
 
         root.setTop(null);
         root.setCenter(settingsView.createContent());

@@ -3,6 +3,7 @@ package gui;
 import core.PasswordEntry;
 import core.Vault;
 import core.storage.VaultStorage;
+import core.BackupStorage;
 
 import java.util.ArrayList;
 
@@ -21,13 +22,7 @@ public class VaultService {
         this.key = key;
     }
 
-    public void updateEntry(
-        PasswordEntry entry,
-        String website,
-        String username,
-        String password,
-        String notes
-    ){
+    public void updateEntry(PasswordEntry entry,String website,String username,String password,String notes){
         entry.setWebsite(website);
         entry.setUsername(username);
         entry.setPassword(password);
@@ -36,9 +31,7 @@ public class VaultService {
         VaultStorage.save(vault, VAULT_FILE, key);
     }
 
-    public ArrayList<PasswordEntry> getEntries(){
-        return vault.getEntries();
-    }
+    public ArrayList<PasswordEntry> getEntries(){return vault.getEntries();}
 
     public void addEntry(String website,String username,String password,String notes){
 
@@ -54,8 +47,8 @@ public class VaultService {
         VaultStorage.save(vault, VAULT_FILE, key);
     }
 
-    public ArrayList<PasswordEntry> search(String website){
-        return vault.searchByWebsite(website);
-    }
+    public ArrayList<PasswordEntry> search(String website){return vault.searchByWebsite(website);}
+
+    public void exportVault(String filename,String exportPassword){BackupStorage.exportVault(vault, filename, exportPassword);}
 
 }
