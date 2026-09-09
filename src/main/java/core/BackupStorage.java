@@ -34,7 +34,7 @@ public class BackupStorage {
                 builder.append("\n");
             }
 
-            String encrypted = EncryptionManager.encrypt(exportPassword, key);
+            String encrypted = EncryptionManager.encrypt(builder.toString(), key);
 
             File file = new File(filename);
 
@@ -54,6 +54,48 @@ public class BackupStorage {
             }
         } catch (IOException e){
             throw new RuntimeException("Failed to export vault.",e);
+        }
+    }
+
+    public static Vault importVault(String filename,String exportPassword){
+
+        try(BufferedReader reader = new BufferedReader(new FileReader(filename))){
+
+            String header = reader.readLine();
+
+            if (!HEADER.equals(header)){throw new RuntimeException("Invalid OmniPass backup file");}
+
+            String saltHex = reader.readLine();
+            String encrypted = reader.readLine();
+
+            if (saltHex == null || encrypted == null){throw new RuntimeException("Invalid Omnipass backup format.");}
+
+            byte[] salt = EncryptionManager.hexToBytes(saltHex);
+
+            SecretKey key = EncryptionManager.deriveKey(exportPassword, salt);
+
+            String decrypted = EncryptionManager.decrypt(encrypted, key);
+
+            Vault vault = new Vault();
+
+            String[] lines = decrypted.split("\n");
+
+            for (String line : lines){
+
+                if (line.isBlank()){continue;}
+
+                String[] parts = line.split("\\|",4);
+
+                if (parts.length != 4){throw new RuntimeException("Invalid entry in backup");}
+
+                PasswordEntry entry = new PasswordEntry(parts[0], parts[1],parts[2], parts[3]);
+
+                vault.addEntry(entry);
+            }
+
+            return vault;
+        } catch (IOException e){
+            throw new RuntimeException("Failed to import vault.",e);
         }
     }
 }

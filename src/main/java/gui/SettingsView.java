@@ -34,7 +34,7 @@ public class SettingsView {
         exportButton.setOnAction(event->{
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Export OmniPass Vault");
-            fileChooser.setInitialFileName("omnipass-backup.opd");
+            fileChooser.setInitialFileName("omnipass-backup.opb");
 
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("OmniPass Backup", "*.opb"));
 
@@ -113,6 +113,92 @@ public class SettingsView {
         });
 
         Button importButton = new Button("📥 Import Vault");
+        importButton.setOnAction(event -> {
+            FileChooser fileChooser = new FileChooser();
+
+            fileChooser.setTitle("Import OmniPass Vault");
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("OmniPass Backup", "*.opb"));
+
+            Window window = importButton.getScene().getWindow();
+
+            java.io.File file = fileChooser.showOpenDialog(window);
+
+            if (file == null){return;}
+
+            Dialog<String> passwordDialog = new Dialog<>();
+
+            passwordDialog.setTitle("Import Vault");
+
+            DialogPane dialogPane = passwordDialog.getDialogPane();
+
+            Label titleLabel = new Label("Enter the backup password");
+            titleLabel.setStyle("-fx-font-size: 18px;"+"-fx-font-weight: bold;");
+
+            Label passwordLabel = new Label("Backup Password:");
+            PasswordField passwordField = new PasswordField();
+            passwordField.setPromptText("Enter the password for yhis backup");
+
+            passwordField.setPrefWidth(260);
+            passwordField.setMinWidth(260);
+            passwordField.setPrefHeight(35);
+            passwordField.setMaxHeight(35);
+
+            HBox passwordRow = new HBox(10);
+            passwordRow.setAlignment(Pos.CENTER_LEFT);
+
+            passwordRow.getChildren().addAll(passwordLabel,passwordField);
+
+            VBox content = new VBox(15);
+            content.setPadding(new Insets(20));
+            content.getChildren().addAll(titleLabel,passwordRow);
+
+            dialogPane.setContent(content);
+
+            ButtonType importButtonType = new ButtonType("Import",ButtonBar.ButtonData.OK_DONE);
+
+            dialogPane.getButtonTypes().addAll(importButtonType,ButtonType.CANCEL);
+
+            applyThemeToDialog(dialogPane);
+
+            passwordDialog.setResultConverter(button ->{
+                if (button == importButtonType){return passwordField.getText();}
+                return null;
+            });
+
+            passwordDialog.showAndWait().ifPresent(importPassword -> {
+                if (importPassword.isBlank()){return;}
+
+                try {
+                    vaultService.importVault(file.getAbsolutePath(), importPassword);
+
+                    Alert success = new Alert(Alert.AlertType.INFORMATION);
+
+                    applyThemeToDialog(success.getDialogPane());
+
+                    success.setTitle("Import Successful");
+
+                    success.setHeaderText(null);
+
+                    success.setContentText("Your OmniPass vault was imported successfully.");
+
+                    success.showAndWait();
+                } catch (Exception e){
+                    Alert error = new Alert(Alert.AlertType.ERROR);
+
+                    applyThemeToDialog(error.getDialogPane());
+
+                    error.setTitle("Import failed");
+
+                    error.setHeaderText(null);
+
+                    error.setContentText("Failed to import the vault. " + "Check the backup file and password.");
+
+                    error.showAndWait();
+                }
+            });
+
+        });
+
         Button deleteButton = new Button("🗑 Delete Vault");
 
         VBox vaultSection = new VBox(10);

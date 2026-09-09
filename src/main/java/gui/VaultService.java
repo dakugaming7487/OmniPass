@@ -51,4 +51,14 @@ public class VaultService {
 
     public void exportVault(String filename,String exportPassword){BackupStorage.exportVault(vault, filename, exportPassword);}
 
+    public void importVault(String filename,String exportPassword){
+
+        Vault importedVault = BackupStorage.importVault(filename, exportPassword);
+
+        vault.getEntries().clear();
+        vault.getEntries().addAll(importedVault.getEntries());
+
+        VaultStorage.save(vault, VAULT_FILE, key);
+    }
+
 }

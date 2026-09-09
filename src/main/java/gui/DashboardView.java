@@ -379,6 +379,8 @@ public class DashboardView {
 
     private void showDashboard(){
 
+        passwordList.getItems().setAll(vaultService.getEntries());
+
         TopBar topBar = new TopBar();
 
         topBar.getAddButton().setOnAction(event ->showAddPaddwordDialog(passwordList));
