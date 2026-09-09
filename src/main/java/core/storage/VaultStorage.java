@@ -79,7 +79,6 @@ public class VaultStorage {
                 writer.write(encrypted);
             }
 
-            System.out.println("Vault saved successfully.");
 
         } catch (IOException e) {
             System.out.println("Failed to save vault.");

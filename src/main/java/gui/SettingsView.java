@@ -1,5 +1,7 @@
 package gui;
 
+import core.security.MasterPassword;
+
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
 
@@ -200,6 +202,112 @@ public class SettingsView {
         });
 
         Button deleteButton = new Button("🗑 Delete Vault");
+        deleteButton.setOnAction(event -> {
+            Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
+
+            confirmation.setTitle("Delete Vault");
+            confirmation.setHeaderText("Delete your vault?");
+            confirmation.setContentText("All saved passwords will be permanently deleted.\n" + "This action cannot be undone.");
+
+            applyThemeToDialog(confirmation.getDialogPane());
+
+            confirmation.showAndWait().ifPresent(result -> {
+
+                if (result != ButtonType.OK) {return;}
+
+                Dialog<ButtonType> passwordDialog = new Dialog<>();
+
+                passwordDialog.setTitle("Delete Vault");
+
+                DialogPane dialogPane = passwordDialog.getDialogPane();
+
+                Label titleLabel = new Label("Enter your OmniPass password");
+
+                titleLabel.setStyle("-fx-font-size: 18px;" + "-fx-font-weight: bold;");
+
+                Label passwordLabel = new Label("Master Password:");
+
+                PasswordField passwordField = new PasswordField();
+
+                passwordField.setPromptText("Enter your OmniPass password");
+
+                passwordField.setPrefWidth(260);
+                passwordField.setMinWidth(260);
+                passwordField.setPrefHeight(35);
+                passwordField.setMaxHeight(35);
+
+                HBox passwordRow = new HBox(10);
+
+                passwordRow.setAlignment(Pos.CENTER_LEFT);
+
+                passwordRow.getChildren().addAll(passwordLabel,passwordField);
+
+                VBox content = new VBox(15);
+
+                content.setPadding(new Insets(20));
+
+                content.getChildren().addAll(titleLabel,passwordRow);
+
+                dialogPane.setContent(content);
+
+                ButtonType deleteButtonType = new ButtonType("Delete",ButtonBar.ButtonData.OK_DONE);
+
+                dialogPane.getButtonTypes().addAll(deleteButtonType,ButtonType.CANCEL);
+
+                applyThemeToDialog(dialogPane);
+
+                passwordDialog.showAndWait().ifPresent(button -> {
+
+                    if (button != deleteButtonType) {return;}
+
+                    String password = passwordField.getText();
+
+                    if (password.isBlank()) {return;}
+
+                    if (MasterPassword.authenticate(password) == null) {
+                    Alert error = new Alert(Alert.AlertType.ERROR);
+
+                    error.setTitle("Incorrect Password");
+                    error.setHeaderText(null);
+                    error.setContentText("Incorrect OmniPass password.\n" +"Your vault was not deleted.");
+
+                    applyThemeToDialog(error.getDialogPane());
+
+                    error.showAndWait();
+
+                    return;
+                }
+            
+                try {
+                    vaultService.deleteVault();
+
+                    Alert success = new Alert(Alert.AlertType.INFORMATION);
+
+                    success.setTitle("Vault Deleted");
+                    success.setHeaderText(null);
+                    success.setContentText("Your OmniPass vault was deleted successfully.");
+
+                    applyThemeToDialog(success.getDialogPane());
+
+                    success.showAndWait();
+
+                    onBack.run();
+
+                } catch (Exception e) {
+
+                    Alert error = new Alert(Alert.AlertType.ERROR);
+
+                    error.setTitle("Delete Failed");
+                    error.setHeaderText(null);
+                    error.setContentText("Failed to delete the vault.");
+
+                    applyThemeToDialog(error.getDialogPane());
+
+                    error.showAndWait();
+                }
+            });
+        });
+    });
 
         VBox vaultSection = new VBox(10);
         vaultSection.getChildren().addAll(exportButton,importButton,deleteButton);

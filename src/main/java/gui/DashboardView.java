@@ -271,9 +271,18 @@ public class DashboardView {
         editButton.setOnAction(event -> {showEditPasswordDialog(entry,passwordList);});
 
         deleteButton.setOnAction(event -> {
-            vaultService.deleteEntry(entry);
-            passwordList.getItems().remove(entry);
-            root.setCenter(passwordCenter);
+            Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
+            confirmation.setTitle("Delete Password");
+            confirmation.setHeaderText("Delete this password?");
+            confirmation.setContentText("Are you sure you want to delee this password?\n" + "This action cannot be undone.");
+            applyDialogTheme(confirmation);
+            confirmation.showAndWait().ifPresent(result -> {
+                if (result == ButtonType.OK){
+                    vaultService.deleteEntry(entry);
+                    passwordList.getItems().remove(entry);
+                    root.setCenter(passwordCenter);
+                }
+            });
         });
 
         HBox actions = new HBox(10,editButton,deleteButton);
