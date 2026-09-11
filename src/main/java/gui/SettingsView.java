@@ -2,6 +2,8 @@ package gui;
 
 import core.security.MasterPassword;
 
+import java.io.File;
+
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
 
@@ -42,7 +44,7 @@ public class SettingsView {
 
             Window window = exportButton.getScene().getWindow();
 
-            java.io.File file = fileChooser.showSaveDialog(window);
+            File file = fileChooser.showSaveDialog(window);
 
             if (file == null){return;}
 
@@ -57,7 +59,7 @@ public class SettingsView {
             Label passwordLabel = new Label("Export Password:");
 
             PasswordField passwordField = new PasswordField();
-            passwordField.setPromptText("Enter a password for thsi backup");
+            passwordField.setPromptText("Enter a password for this backup");
             passwordField.setPrefWidth(260);
             passwordField.setMinWidth(260);
             passwordField.setPrefHeight(35);
@@ -123,7 +125,7 @@ public class SettingsView {
 
             Window window = importButton.getScene().getWindow();
 
-            java.io.File file = fileChooser.showOpenDialog(window);
+            File file = fileChooser.showOpenDialog(window);
 
             if (file == null){return;}
 
@@ -304,10 +306,10 @@ public class SettingsView {
                     applyThemeToDialog(error.getDialogPane());
 
                     error.showAndWait();
-                }
+                    }
+                });
             });
         });
-    });
 
         VBox vaultSection = new VBox(10);
         vaultSection.getChildren().addAll(exportButton,importButton,deleteButton);
@@ -317,6 +319,133 @@ public class SettingsView {
         securityLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
 
         Button changePasswordButton = new Button("🔐 Change Master Password");
+        changePasswordButton.setOnAction(event ->{
+            Dialog<ButtonType> passwordDialog = new Dialog<>();
+            passwordDialog.setTitle("Change Master Password");
+
+            DialogPane dialogPane = passwordDialog.getDialogPane();
+
+            Label titleLabel = new Label("Change your OmniPass master password");
+            titleLabel.setStyle("-fx-font-size: 18px;" + "-fx-font-weight: bold;");
+
+            Label currentLabel = new Label("Current Password:");
+
+            PasswordField currentField = new PasswordField();
+            currentField.setPromptText("Enter current password");
+
+            Label newLabel = new Label("New Password");
+
+            PasswordField newField = new PasswordField();
+            newField.setPromptText("Enter new password");
+
+            Label confirmLabel = new Label("Confirm Password:");
+
+            PasswordField confirmField = new PasswordField();
+            confirmField.setPromptText("Confirm new password");
+
+            currentField.setPrefWidth(260);
+            currentField.setMinWidth(260);
+
+            newField.setPrefWidth(260);
+            newField.setMinWidth(260);
+
+            confirmField.setPrefWidth(260);
+            confirmField.setMinWidth(260);
+
+            VBox content = new VBox(12);
+            content.setPadding(new Insets(20));
+
+            content.getChildren().addAll(
+                titleLabel,
+                currentLabel,
+                currentField,
+                newLabel,
+                newField,
+                confirmLabel,
+                confirmField
+            );
+
+            dialogPane.setContent(content);
+
+            ButtonType changeButtonType = new ButtonType("Change Password",ButtonBar.ButtonData.OK_DONE);
+
+            dialogPane.getButtonTypes().addAll(
+                changeButtonType,
+                ButtonType.CANCEL
+            );
+
+            applyThemeToDialog(dialogPane);
+
+            passwordDialog.showAndWait().ifPresent(result -> {
+
+                if (result != changeButtonType){return;}
+
+                String currentPassword = currentField.getText();
+                String newPassword = newField.getText();
+                String confirmPassword = confirmField.getText();
+
+                if (currentPassword.isBlank() || newPassword.isBlank() || confirmPassword.isBlank()){
+                    Alert error = new Alert(Alert.AlertType.ERROR);
+                    
+                    error.setTitle("Invailt Password");
+                    error.setHeaderText(null);
+                    error.setContentText("All password fields are required.");
+
+                    applyThemeToDialog(error.getDialogPane());
+                    error.showAndWait();
+                    return;
+                }
+
+                if (!newPassword.equals(confirmPassword)){
+                    Alert error = new Alert(Alert.AlertType.ERROR);
+
+                    error.setTitle("Password Do Not Match.");
+                    error.setHeaderText(null);
+                    error.setContentText("The new password doesnt match confirm password.");
+                    
+                    applyThemeToDialog(error.getDialogPane());
+                    error.showAndWait();
+                    return; 
+                }
+
+                if (currentPassword.equals(newPassword)){
+                    Alert error = new Alert(Alert.AlertType.ERROR);
+
+                    error.setTitle("Invalid Password");
+                    error.setHeaderText(null);
+                    error.setContentText("The new password must be different from the current password.");
+
+                    applyThemeToDialog(error.getDialogPane());
+                    error.showAndWait();
+                    return;
+                }
+
+                boolean changed = vaultService.changeMasterPassword(currentPassword, newPassword);
+
+                if (!changed){
+                    Alert error = new Alert(Alert.AlertType.ERROR);
+
+                    error.setTitle("Password Change Failed");
+                    error.setHeaderText(null);
+                    error.setContentText("The current password is incorrect or the password change failed.");
+
+                    applyThemeToDialog(error.getDialogPane());
+                    error.showAndWait();
+                    return;
+                }
+                
+                Alert success = new Alert(Alert.AlertType.INFORMATION);
+
+                success.setTitle("Password Changed");
+                success.setHeaderText(null);
+                success.setContentText("Your OmniPass master password was changed successfully.");
+
+                applyThemeToDialog(success.getDialogPane());
+
+                success.showAndWait();
+            });
+        });
+
         Button lockButton = new Button("🔒 Lock OmniPass");
 
         VBox securitySection = new VBox(10);

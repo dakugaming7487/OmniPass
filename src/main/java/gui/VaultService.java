@@ -4,7 +4,9 @@ import core.PasswordEntry;
 import core.Vault;
 import core.storage.VaultStorage;
 import core.BackupStorage;
+import core.security.MasterPassword;
 
+import java.io.*;
 import java.util.ArrayList;
 
 import javax.crypto.SecretKey;
@@ -15,7 +17,7 @@ public class VaultService {
     private static final String VAULT_FILE = "data/vault.dat";
     
     private final Vault vault;
-    private final SecretKey key;
+    private SecretKey key;
 
     public ArrayList<PasswordEntry> getEntries(){return vault.getEntries();}
 
@@ -39,9 +41,42 @@ public class VaultService {
         VaultStorage.save(vault, VAULT_FILE, key);
     }
 
+    public boolean changeMasterPassword(String currentPassword, String newPassword){
+        SecretKey oldKey = MasterPassword.authenticate(currentPassword);
+
+        if (oldKey == null){return false;}
+
+        MasterPassword.Credentials credentials = MasterPassword.generateCredentials(newPassword);
+
+        SecretKey newKey = credentials.key();
+
+        if (!VaultStorage.save(vault, VAULT_FILE, newKey)){return false;}
+
+        try {
+            File masterfile = new File("data/master.dat");
+
+            String saltHex = core.crypto.EncryptionManager.bytesToHex(credentials.salt());
+
+            try(BufferedWriter writer = new BufferedWriter(new FileWriter(masterfile))){
+                writer.write(saltHex + ":" + credentials.hash());
+            }
+        } catch (IOException e){
+            e.printStackTrace();
+
+            // The vault has already been encrypted with the new key,
+            // but the master password file could not be updated.
+            // Do not switch th active key
+            return false;
+        }
+
+        key = newKey;
+
+        return true;
+    }
+
     public void deleteVault(){
         vault.getEntries().clear();
-        java.io.File vaultFile = new java.io.File(VAULT_FILE);
+        File vaultFile = new File(VAULT_FILE);
         if (vaultFile.exists() && !vaultFile.delete()){throw new RuntimeException("Failed to delete vault.");}
     }
 

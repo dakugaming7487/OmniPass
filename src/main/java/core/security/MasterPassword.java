@@ -1,16 +1,30 @@
 package core.security;
 
-import core.crypto.EncryptionManager;
-
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Scanner;
 
-import java.io.*;
-
 import javax.crypto.SecretKey;
+
+import core.crypto.EncryptionManager;
 
 public class MasterPassword {
 
     private static final String MASTER_FILE = "data/master.dat";
+
+    public record Credentials(byte[] salt, String hash, SecretKey key) {}
+
+    public static Credentials generateCredentials(String password){
+        byte[] salt = EncryptionManager.generateSalt();
+        String hash = EncryptionManager.pbkdf2Hash(password, salt);
+        SecretKey key = EncryptionManager.deriveKey(password, salt);
+
+        return new Credentials(salt, hash, key);
+    }
 
     private static Boolean generator(String password){
 
@@ -33,10 +47,10 @@ public class MasterPassword {
             e.printStackTrace();
             return false;
         }
-    }
+    }    
 
     public static boolean exists(){
-        return new java.io.File(MASTER_FILE).exists();
+        return new File(MASTER_FILE).exists();
     }
 
     public static SecretKey cli(Scanner scanner) {

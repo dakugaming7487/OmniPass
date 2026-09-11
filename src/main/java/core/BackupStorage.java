@@ -3,7 +3,7 @@ package core;
 
 import core.crypto.EncryptionManager;
 
-import  java.io.*;
+import java.io.*;
 import javax.crypto.SecretKey;
 
 public class BackupStorage {

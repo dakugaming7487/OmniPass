@@ -48,41 +48,43 @@ public class VaultStorage {
         return vault;
     }
 
-    public static void save(Vault vault, String filename, SecretKey key) {
+    public static boolean save(Vault vault, String filename, SecretKey key) {
         try {
             File file = new File(filename);
             File parent = file.getParentFile();
 
-            if (parent != null && !parent.exists()) {parent.mkdirs();}
-
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-
-                StringBuilder builder = new StringBuilder();
-
-                for (PasswordEntry entry : vault.getEntries()) {
-
-                    builder.append(entry.getWebsite());
-                    builder.append("|");
-
-                    builder.append(entry.getUsername());
-                    builder.append("|");
-
-                    builder.append(entry.getPassword());
-                    builder.append("|");
-
-                    builder.append(entry.getNotes());
-                    builder.append("\n");
-                }
-
-                String encrypted = EncryptionManager.encrypt(builder.toString(), key);
-
-                writer.write(encrypted);
+            if (parent != null && !parent.exists() && !parent.mkdirs() && !parent.exists()) {
+                System.out.println("Failed to create vault directory.");
+                return false;
             }
 
+            StringBuilder builder = new StringBuilder();
+
+            for (PasswordEntry entry : vault.getEntries()) {
+
+                builder.append(entry.getWebsite());
+                builder.append("|");
+
+                builder.append(entry.getUsername());
+                builder.append("|");
+
+                builder.append(entry.getPassword());
+                builder.append("|");
+
+                builder.append(entry.getNotes());
+                builder.append("\n");
+            }
+
+            String encrypted = EncryptionManager.encrypt(builder.toString(), key);
+                
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))){writer.write(encrypted);}
+
+            return true;
 
         } catch (IOException e) {
             System.out.println("Failed to save vault.");
             e.printStackTrace();
+            return false;
         }
     }
 }
