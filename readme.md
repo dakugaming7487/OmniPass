@@ -26,16 +26,35 @@ The `develop` branch contains the current desktop GUI work built on top of the p
 - Encrypted vault storage
 - Random IV generation for vault encryption
 - Persistent vault save/load
+- Change master password
+- Re-encrypt vault when changing the master password
+- Lock OmniPass and return to the login screen
+- Delete/reset vault with master-password verification
+
+### Backup & import/export
+
+- Export encrypted vault backups
+- Import encrypted vault backups
+- Backup-password protection
+- Restore imported entries into the active vault
 
 ### Desktop GUI
 
 - JavaFX desktop application
 - GUI master-password login
 - Dark theme
-- Dashboard foundation
-- Search bar UI
-- Add Password button UI
-- Settings button UI
+- Light theme
+- Theme switching
+- Dashboard
+- Password list UI
+- Search bar
+- Add password dialog
+- Edit password dialog
+- Settings page
+- Change Master Password
+- Lock OmniPass
+- Import/Export controls
+- Delete Vault controls
 
 ## 🛠️ Tech Stack
 
@@ -57,25 +76,35 @@ OmniPass/
 │       ├── java/
 │       │   ├── core/
 │       │   │   ├── crypto/
+│       │   │   │   └── EncryptionManger.java
 │       │   │   ├── security/
+│       │   │   │   └── MasterPassword.java
 │       │   │   ├── storage/
+│       │   │   │   └── VaultStorage.java
 │       │   │   ├── utils/
+│       │   │   │   └── PasswordGenerator.java
+│       │   │   ├── BackupStorage.java
 │       │   │   ├── PasswordEntry.java
 │       │   │   ├── Vault.java
 │       │   │   └── Main.java
 │       │   └── gui/
 │       │       ├── components/
+│       │       │   └── TopBar.java
 │       │       ├── DashboardView.java
 │       │       ├── LoginView.java
-│       │       └── OmniPassApp.java
+│       │       ├── MasterPasswordSetupView.java
+│       │       ├── OmniPassApp.java
+│       │       ├── SettingsView.java 
+│       │       ├── ThemeManager.java
+│       │       └── VaultService.java 
 │       └── resources/
 │           └── styles/
+│               └── style.css
 ├── docs/
 ├── pom.xml
 ├── readme.md
 ├── todo.md
 └── LICENSE
-```
 
 ## 🚀 Running OmniPass
 
@@ -134,9 +163,9 @@ Dashboard
 - [x] Light theme
 - [x] Dark theme
 - [x] Theme manager
-- [ ] Settings functionality
-- [ ] Import/Export
-- [ ] Erase button
+- [x] Settings functionality
+- [x] Import/Export
+- [x] Erase button
 
 ### v1.0.0 — Stable Release
 
@@ -154,9 +183,9 @@ Dashboard
 
 ## ⚠️ Security Status
 
-OmniPass is an educational and experimental project at this stage. Do **not** rely on it as your primary password manager for important real-world secrets yet.
+OmniPass is an educational and experimental project at this stage. Do not rely on it as your primary password manager for important real-world secrets yet.
 
-The current vault encryption uses AES-CBC. Future security work should move the vault format to an authenticated encryption mode such as AES-GCM and include integrity protection before a stable release.
+The current vault and backup encryption use AES-CBC. Future security work should move the vault and backup formats to an authenticated encryption mode such as AES-GCM and include integrity protection before a stable release.
 
 ## 🤝 Contributing
 
