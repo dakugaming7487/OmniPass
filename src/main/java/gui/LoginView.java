@@ -43,7 +43,15 @@ public class LoginView {
 
         VaultService vaultService = new VaultService(vault, key);
 
-        DashboardView dashboard = new DashboardView(vaultService);
+        LoginView loginView = new LoginView();
+
+        DashboardView dashboard = new DashboardView(vaultService,() -> {
+            Parent loginContent = loginView.createContent(stage);
+            Scene loginScene = new Scene(loginContent, 900, 600);
+            loginScene.getStylesheets().add(getClass().getResource("/styles/style.css").toExternalForm()) ;
+            ThemeManager.applyTheme(loginScene, ThemeManager.getCurrentTheme());
+            stage.setScene(loginScene);
+        });
 
         Scene dashboardScene = new Scene(dashboard.createContent(), 900, 600);
 

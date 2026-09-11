@@ -20,8 +20,12 @@ public class DashboardView {
     private ListView<PasswordEntry> passwordList;
 
     private final VaultService vaultService;
+    private final Runnable onLock;
 
-    public DashboardView(VaultService vaultService){this.vaultService = vaultService;}
+    public DashboardView(VaultService vaultService,Runnable onLock){
+        this.vaultService = vaultService;
+        this.onLock = onLock;
+    }
     
     private void applyDialogTheme(Dialog<?> dialog){
         DialogPane dialogPane = dialog.getDialogPane();
@@ -379,7 +383,7 @@ public class DashboardView {
 
     private void showSettings(){
 
-        SettingsView settingsView = new SettingsView(vaultService,this::showDashboard);
+        SettingsView settingsView = new SettingsView(vaultService,this::showDashboard,onLock);
 
         root.setTop(null);
         root.setCenter(settingsView.createContent());

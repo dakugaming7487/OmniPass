@@ -17,11 +17,13 @@ import javafx.geometry.Pos;
 public class SettingsView {
 
     private final Runnable onBack;
+    private final Runnable onLock;
     private final VaultService vaultService;
 
-    public SettingsView(VaultService vaultService,Runnable onBack) {
+    public SettingsView(VaultService vaultService,Runnable onBack,Runnable onLock) {
         this.vaultService = vaultService;
         this.onBack = onBack;
+        this.onLock = onLock;
     }
 
     private void applyThemeToDialog(DialogPane dialogPane){ThemeManager.applyThemeToDialog(dialogPane);}
@@ -447,6 +449,10 @@ public class SettingsView {
         });
 
         Button lockButton = new Button("🔒 Lock OmniPass");
+        lockButton.setOnAction(event ->{
+            vaultService.lock();
+            onLock.run();
+        });
 
         VBox securitySection = new VBox(10);
         securitySection.getChildren().addAll(changePasswordButton,lockButton);

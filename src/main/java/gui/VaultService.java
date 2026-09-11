@@ -74,6 +74,11 @@ public class VaultService {
         return true;
     }
 
+    public void lock(){
+        vault.getEntries().clear();
+        key = null;
+    }
+
     public void deleteVault(){
         vault.getEntries().clear();
         File vaultFile = new File(VAULT_FILE);
