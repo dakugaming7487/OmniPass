@@ -20,7 +20,6 @@ public class LoginView {
     private PasswordField passwordField = new PasswordField();
 
     private void login(Stage stage){
-        
         String password = getPassword();
 
         if (password.isBlank()){
@@ -35,32 +34,40 @@ public class LoginView {
             return;
         }
 
-        Vault vault = VaultStorage.load("data/vault.dat", key);
+        Vault vault;
+
+        try {
+            vault = VaultStorage.load("data/vault.dat", key);
+        } catch (RuntimeException e){
+            showError("Vault cound not be verified. It may be corrupted or modified.");
+            return;
+        }
 
         if (vault == null){
             vault = new Vault();
         }
 
         VaultService vaultService = new VaultService(vault, key);
-
         LoginView loginView = new LoginView();
 
-        DashboardView dashboard = new DashboardView(vaultService,() -> {
+        DashboardView dashboard = new DashboardView(vaultService, () ->{
             Parent loginContent = loginView.createContent(stage);
             Scene loginScene = new Scene(loginContent, 900, 600);
-            loginScene.getStylesheets().add(getClass().getResource("/styles/style.css").toExternalForm()) ;
+
+            loginScene.getStylesheets().add(getClass().getResource("/styles.style.css").toExternalForm());
+            
             ThemeManager.applyTheme(loginScene, ThemeManager.getCurrentTheme());
+
             stage.setScene(loginScene);
         });
 
         Scene dashboardScene = new Scene(dashboard.createContent(), 900, 600);
-
         dashboardScene.getStylesheets().add(getClass().getResource("/styles/style.css").toExternalForm());
 
         ThemeManager.applyTheme(dashboardScene, ThemeManager.getCurrentTheme());
-
         stage.setScene(dashboardScene);
-    }
+    }   
+
 
     private void showError(String message){
         Alert alert = new Alert(Alert.AlertType.ERROR);

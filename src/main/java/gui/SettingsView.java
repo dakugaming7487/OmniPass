@@ -142,7 +142,7 @@ public class SettingsView {
 
             Label passwordLabel = new Label("Backup Password:");
             PasswordField passwordField = new PasswordField();
-            passwordField.setPromptText("Enter the password for yhis backup");
+            passwordField.setPromptText("Enter the password for this backup");
 
             passwordField.setPrefWidth(260);
             passwordField.setMinWidth(260);

@@ -11,7 +11,6 @@ import javax.crypto.SecretKey;
 
 public class BackupStorage {
     
-    private static final String LEGACY_HEADER = "OMNIPASS_BACKUP_V1";
     private static final String HEADER = "OMNIPASS_BACKUP_V2";
 
     public static String encode(String value){
@@ -78,7 +77,7 @@ public class BackupStorage {
 
             String header = reader.readLine();
 
-            if (!HEADER.equals(header) && !LEGACY_HEADER.equals(header)){
+            if (!HEADER.equals(header)){
                 throw new RuntimeException("Invalid OmniPass backup file");
             }
 
@@ -111,21 +110,12 @@ public class BackupStorage {
 
                 PasswordEntry entry;
 
-                if (LEGACY_HEADER.equals(header)){
-                    entry = new PasswordEntry(
-                        parts[0],
-                        parts[1],
-                        parts[2],
-                        parts[3]
-                    );
-                } else {
-                    entry = new PasswordEntry(
-                        decode(parts[0]),
-                        decode(parts[1]),
-                        decode(parts[2]),
-                        decode(parts[3])
-                    );
-                }
+                entry = new PasswordEntry(
+                    decode(parts[0]),
+                    decode(parts[1]),
+                    decode(parts[2]),
+                    decode(parts[3])
+                );            
 
                 vault.addEntry(entry);
             }
