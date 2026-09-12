@@ -12,55 +12,62 @@ import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
-import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.GCMParameterSpec;
+
+import java.nio.charset.StandardCharsets;
 
 public class EncryptionManager {
 
-    public static String encrypt(String text, SecretKey key) {
-
+    public static String encrypt(String text, SecretKey key){
         try {
+            Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
 
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-
-            byte[] iv = new byte[16];
+            byte[] nonce = new byte[12];
             SecureRandom random = new SecureRandom();
-            random.nextBytes(iv);
+            random.nextBytes(nonce);
 
-            IvParameterSpec ivSpec = new IvParameterSpec(iv);
+            GCMParameterSpec gcmSpec = new GCMParameterSpec(128, nonce);
 
-            cipher.init(Cipher.ENCRYPT_MODE, key, ivSpec);
+            cipher.init(Cipher.ENCRYPT_MODE, key, gcmSpec);
 
-            byte[] encrypted = cipher.doFinal(text.getBytes());
+            byte[] encrypted = cipher.doFinal(text.getBytes(StandardCharsets.UTF_8));
 
-            String ivString = Base64.getEncoder().encodeToString(iv);
+            String nonceString = Base64.getEncoder().encodeToString(nonce);
             String encryptedString = Base64.getEncoder().encodeToString(encrypted);
 
-            return ivString + ":" + encryptedString;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+            return "OMNIPASS_GCM_V1:" + nonceString + ":" + encryptedString;
+            
+        } catch (Exception e){
+            throw new RuntimeException("Encryption failed.", e);
         }
     }
 
-    public static String decrypt(String encryptedText, SecretKey key) {
-
+    public static String decrypt(String encryptedText, SecretKey key){
         try {
+            String[] parts = encryptedText.split(":",3);
 
-            String[] parts = encryptedText.split(":");
+            if (parts.length != 3 || !parts[0].equals("OMNIPASS_GCM_V1")){
+                throw new RuntimeException("Invalid encrypted data format.");
+            }
 
-            byte[] iv = Base64.getDecoder().decode(parts[0]);
-            byte[] encrypted = Base64.getDecoder().decode(parts[1]);
+            byte[] nonce = Base64.getDecoder().decode(parts[1]);
+            byte[] encrypted = Base64.getDecoder().decode(parts[2]);
 
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            if (nonce.length != 12){
+                throw new RuntimeException("Invalid encryption nonce.");
+            }
 
-            IvParameterSpec ivSpec = new IvParameterSpec(iv);
+            Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
 
-            cipher.init(Cipher.DECRYPT_MODE, key, ivSpec);
+            GCMParameterSpec gcmSpec = new GCMParameterSpec(128, nonce);
+
+            cipher.init(Cipher.DECRYPT_MODE, key, gcmSpec);
 
             byte[] decrypted = cipher.doFinal(encrypted);
 
-            return new String(decrypted);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+            return new String(decrypted,StandardCharsets.UTF_8);
+        } catch (Exception e){
+            throw new RuntimeException("Decryption failed.", e);
         }
     }
 
