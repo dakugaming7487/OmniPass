@@ -3,12 +3,27 @@ package core;
 
 import core.crypto.EncryptionManager;
 
+import java.util.Base64;
+import java.nio.charset.StandardCharsets;
+
 import java.io.*;
 import javax.crypto.SecretKey;
 
 public class BackupStorage {
     
-    private static final String HEADER = "OMNIPASS_BACKUP_V1";
+    private static final String LEGACY_HEADER = "OMNIPASS_BACKUP_V1";
+    private static final String HEADER = "OMNIPASS_BACKUP_V2";
+
+    public static String encode(String value){
+        return Base64.getEncoder().encodeToString(value.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public static String decode(String value){
+        return new String(
+            Base64.getDecoder().decode(value),
+            StandardCharsets.UTF_8
+        );
+    }
 
     public static void exportVault(Vault vault,String filename,String exportPassword){
 
@@ -21,16 +36,16 @@ public class BackupStorage {
 
             for (PasswordEntry entry : vault.getEntries()){
 
-                builder.append(entry.getWebsite());
+                builder.append(encode(entry.getWebsite()));
                 builder.append("|");
 
-                builder.append(entry.getUsername());
+                builder.append(encode(entry.getUsername()));
                 builder.append("|");
 
-                builder.append(entry.getPassword());
+                builder.append(encode(entry.getPassword()));
                 builder.append("|");
 
-                builder.append(entry.getNotes());
+                builder.append(encode(entry.getNotes()));
                 builder.append("\n");
             }
 
@@ -57,18 +72,22 @@ public class BackupStorage {
         }
     }
 
-    public static Vault importVault(String filename,String exportPassword){
+    public static Vault importVault(String filename, String exportPassword){
 
-        try(BufferedReader reader = new BufferedReader(new FileReader(filename))){
+        try (BufferedReader reader = new BufferedReader(new FileReader(filename))){
 
             String header = reader.readLine();
 
-            if (!HEADER.equals(header)){throw new RuntimeException("Invalid OmniPass backup file");}
+            if (!HEADER.equals(header) && !LEGACY_HEADER.equals(header)){
+                throw new RuntimeException("Invalid OmniPass backup file");
+            }
 
             String saltHex = reader.readLine();
             String encrypted = reader.readLine();
 
-            if (saltHex == null || encrypted == null){throw new RuntimeException("Invalid Omnipass backup format.");}
+            if (saltHex == null || encrypted == null){
+                throw new RuntimeException("Invalid OmniPassword backup format.");
+            }
 
             byte[] salt = EncryptionManager.hexToBytes(saltHex);
 
@@ -77,23 +96,42 @@ public class BackupStorage {
             String decrypted = EncryptionManager.decrypt(encrypted, key);
 
             Vault vault = new Vault();
-
+            
             String[] lines = decrypted.split("\n");
 
             for (String line : lines){
 
                 if (line.isBlank()){continue;}
 
-                String[] parts = line.split("\\|",4);
+                String[] parts = line.split("\\|", 4);
 
-                if (parts.length != 4){throw new RuntimeException("Invalid entry in backup");}
+                if (parts.length != 4){
+                    throw new RuntimeException("Invalid entry in backup");
+                }
 
-                PasswordEntry entry = new PasswordEntry(parts[0], parts[1],parts[2], parts[3]);
+                PasswordEntry entry;
+
+                if (LEGACY_HEADER.equals(header)){
+                    entry = new PasswordEntry(
+                        parts[0],
+                        parts[1],
+                        parts[2],
+                        parts[3]
+                    );
+                } else {
+                    entry = new PasswordEntry(
+                        decode(parts[0]),
+                        decode(parts[1]),
+                        decode(parts[2]),
+                        decode(parts[3])
+                    );
+                }
 
                 vault.addEntry(entry);
             }
 
             return vault;
+
         } catch (IOException e){
             throw new RuntimeException("Failed to import vault.",e);
         }

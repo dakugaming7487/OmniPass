@@ -4,17 +4,21 @@ import core.PasswordEntry;
 import core.Vault;
 import core.crypto.EncryptionManager;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.BufferedReader;
-import java.io.FileWriter;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 
 import javax.crypto.SecretKey;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+
 public class VaultStorage {
+
+    private static String encode(String value){
+        return Base64.getEncoder().encodeToString(value.getBytes(StandardCharsets.UTF_8));
+    }
+    private static String decode(String value){
+        return new String(Base64.getDecoder().decode(value),StandardCharsets.UTF_8);
+    }
 
     public static Vault load(String filename, SecretKey key) {
 
@@ -30,11 +34,19 @@ public class VaultStorage {
 
             String[] lines = decrypted.split("\n");
 
-            for (String line : lines) {
-                if (line.isBlank()) {continue;}
+            for (String line : lines){
+                if (line.isBlank()){continue;}
+
                 String[] parts = line.split("\\|", 4);
 
-                PasswordEntry entry = new PasswordEntry(parts[0],parts[1],parts[2],parts[3]);
+                if (parts.length != 4){throw new RuntimeException("Invalid entry in vault.");}
+
+                PasswordEntry entry = new PasswordEntry(
+                    decode(parts[0]),
+                    decode(parts[1]),
+                    decode(parts[2]),
+                    decode(parts[3])
+                ); 
 
                 vault.addEntry(entry);
             }
@@ -62,16 +74,16 @@ public class VaultStorage {
 
             for (PasswordEntry entry : vault.getEntries()) {
 
-                builder.append(entry.getWebsite());
+                builder.append(encode(entry.getWebsite()));
                 builder.append("|");
 
-                builder.append(entry.getUsername());
+                builder.append(encode(entry.getUsername()));
                 builder.append("|");
 
-                builder.append(entry.getPassword());
+                builder.append(encode(entry.getPassword()));
                 builder.append("|");
 
-                builder.append(entry.getNotes());
+                builder.append(encode(entry.getNotes()));
                 builder.append("\n");
             }
 
